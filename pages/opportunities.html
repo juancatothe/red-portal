@@ -34,7 +34,8 @@
           <div class="large-12 cell">
             <h3>Opportunities</h3>
               <div id='map'>
-                <img src="../img/opportunites_map.png"/>
+                <img class="map-pic info-map" src="../img/opportunites_map.png"/>
+                <img class="map-pic data-map" style="display:none" src="../img/opportunites_map_data.png"/>
               </div>
           </div>
         </div>
@@ -97,5 +98,17 @@
     <script src="../js/vendor/foundation.js"></script>
     <script src="../js/rfp.js"></script>
     <script src="../js/app.js"></script>
+    <script>
+        $('.map-pic').click(function(){
+            if($('.data-map').css('display') == 'none'){
+                $('.info-map').hide();
+                $('.data-map').show();
+            }
+            else{
+                $('.info-map').show();
+                $('.data-map').hide();                
+            }
+        });
+    </script>
   </body>
 </html>
