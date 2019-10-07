@@ -1439,13 +1439,13 @@ a.property-app-link {
                         $('#map-sidebar-info .mcm-data').empty();
                         $('#map-sidebar-info .occupancy-data').empty();
                         $('#map-sidebar-info .additional-data').empty();  $.get("https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Requests_for_Proposal/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pgeojson&token=", function(rfpCount) { $('#total-rfp-number').text(rfpCount.features.length.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"))}, 'json'),
-                        $.get("https://data.detroitmi.gov/resource/snut-x2sy.json?taxable_status=%27CITY%20OWNED%27&$limit=500000", function(cityOwnedCount) {$('#city-owned-number').text(cityOwnedCount.length.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"))}, 'json'),
-                        $.get('https://data.detroitmi.gov/resource/but4-ky7y.geojson?$where=permit_issued%3E%22' + permitDate + '%22%20AND%20permit_status=%22OPEN%22AND%20residential=%22RESIDENTIAL%22&$limit=50000', function(residentialPermitsCount) {$('#open-residential-permits-number').text(residentialPermitsCount.features.length.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"))}, 'json');
-                        $.get('https://data.detroitmi.gov/resource/but4-ky7y.geojson?$where=permit_issued%3E%22' + permitDate + '%22%20AND%20permit_status=%22OPEN%22AND%20residential=%22NON-RESIDENTIAL%22&$limit=50000', function(commercialPermitsCount) { $('#open-commercial-permits-number').text(commercialPermitsCount.features.length.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"))}, 'json');
-                        $.get('https://data.detroitmi.gov/resource/pizv-bpt2.json', function(parksCount) {$('#city-owned-parks-number').text(parksCount.length.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"))}, 'json');
-                        $.get('https://data.detroitmi.gov/resource/vsin-ur7i.json?$limit=1000000', function(dlbaCount) {$('#dlba-number').text(dlbaCount.length.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"))}, 'json');
-                        $.get('https://data.detroitmi.gov/resource/f3fy-ksxq.json', function(mcRestoreCount) {$('#motor-city-restore-number').text(mcRestoreCount.length.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"))}, 'json');
-                        $.get('https://data.detroitmi.gov/resource/ibmm-yi2w.json', function(mcmBusinessCount) {$('#motor-city-match-businesses-number').text(mcmBusinessCount.length.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"))}, 'json');
+                        $.get("https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/assessor_parcels_opendata/FeatureServer/0/query?where=TAX_STATUS%20%3D%20%27CITY%20OWNED%27&outFields=*&returnCountOnly=true&outSR=4326&f=json", function(cityOwnedCount) {$('#city-owned-number').text(cityOwnedCount.count.toLocaleString())}, 'json'),
+                        // $.get('https://data.detroitmi.gov/resource/but4-ky7y.geojson?$where=permit_issued%3E%22' + permitDate + '%22%20AND%20permit_status=%22OPEN%22AND%20residential=%22RESIDENTIAL%22&$limit=50000', function(residentialPermitsCount) {$('#open-residential-permits-number').text(residentialPermitsCount.features.length.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"))}, 'json');
+                        // $.get('https://data.detroitmi.gov/resource/but4-ky7y.geojson?$where=permit_issued%3E%22' + permitDate + '%22%20AND%20permit_status=%22OPEN%22AND%20residential=%22NON-RESIDENTIAL%22&$limit=50000', function(commercialPermitsCount) { $('#open-commercial-permits-number').text(commercialPermitsCount.features.length.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"))}, 'json');
+                        $.get('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ParksRec/FeatureServer/2/query?where=1%3D1&returnCountOnly=true&f=pjson', function(parksCount) {$('#city-owned-parks-number').text(parksCount.count.toLocaleString())}, 'json');
+                        $.get('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/DLBA_Owned_Properties/FeatureServer/0/query?where=1%3D1&outFields=*&returnCountOnly=true&outSR=4326&f=json', function(dlbaCount) {$('#dlba-number').text(dlbaCount.count.toLocaleString())}, 'json');
+                        $.get('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/MCRS_Awardees/FeatureServer/0/query?where=1%3D1&outFields=*&returnCountOnly=true&outSR=4326&f=json', function(mcRestoreCount) {$('#motor-city-restore-number').text(mcRestoreCount.count.toLocaleString())}, 'json');
+                        $.get('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/MCM_Cash_Awardees/FeatureServer/0/query?where=1%3D1&outFields=*&returnCountOnly=true&outSR=4326&f=json', function(mcmBusinessCount) {$('#motor-city-match-businesses-number').text(mcmBusinessCount.count.toLocaleString())}, 'json');
                         $('#map-sidebar-info .map-sidebar-header').text('DETROIT');
                         $('#map-sidebar-info .occupancy-data').append('<div data-field="Photo_URL" class="frame"><img alt="Photo of Detroit" src="https://detroitmi.gov/sites/detroitmi.localhost/files/styles/de2e/public/2018-11/detroit1.jpg"></div>');
                         $('#map-sidebar-info .key-data').append('<h5><span>DEMOGRAPHICS</span></h5><p><span class="field-label">POPULATION:</span> 672,795</p>');
@@ -1587,11 +1587,11 @@ a.property-app-link {
                         });
                         map.addSource('mcm-business', {
                             type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/ibmm-yi2w.geojson'
+                            data: 'https://opendata.arcgis.com/datasets/76e09cb0417a452aba99608ccf40f116_0.geojson'
                         });
                         map.addSource('mc-restore', {
                             type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/f3fy-ksxq.geojson'
+                            data: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/MCRS_Awardees/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson'
                         });
                         map.addSource('vacant-multi', {
                             type: 'geojson',
@@ -1629,18 +1629,18 @@ a.property-app-link {
                             type: 'geojson',
                             data: 'https://data.detroitmi.gov/resource/snut-x2sy.geojson?taxable_status=%27CITY%20OWNED%27&$limit=500000'
                         });
-                        map.addSource('residential-permits', {
-                            type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/but4-ky7y.geojson?$where=permit_issued%3E%22' + permitDate + '%22%20AND%20permit_status=%22OPEN%22AND%20residential=%22RESIDENTIAL%22&$limit=50000'
-                        });
-                        map.addSource('one-million', {
-                            type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/but4-ky7y.geojson?$where=permit_issued%3E%22' + permitDate + '%22%20AND%20permit_status=%22OPEN%22AND%20residential=%22NON-RESIDENTIAL%22AND%20estimated_cost%3C1000000AND%20parcel_no!="08003608."&$limit=50000'
-                        });
-                        map.addSource('twenty-five-million', {
-                            type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/but4-ky7y.geojson?$where=permit_issued%3E%22' + permitDate + '%22%20AND%20permit_status=%22OPEN%22AND%20residential=%22NON-RESIDENTIAL%22AND%20estimated_cost%3E%221000000%22&$limit=50000'
-                        });
+                        // map.addSource('residential-permits', {
+                        //     type: 'geojson',
+                        //     data: 'https://data.detroitmi.gov/resource/but4-ky7y.geojson?$where=permit_issued%3E%22' + permitDate + '%22%20AND%20permit_status=%22OPEN%22AND%20residential=%22RESIDENTIAL%22&$limit=50000'
+                        // });
+                        // map.addSource('one-million', {
+                        //     type: 'geojson',
+                        //     data: 'https://data.detroitmi.gov/resource/but4-ky7y.geojson?$where=permit_issued%3E%22' + permitDate + '%22%20AND%20permit_status=%22OPEN%22AND%20residential=%22NON-RESIDENTIAL%22AND%20estimated_cost%3C1000000AND%20parcel_no!="08003608."&$limit=50000'
+                        // });
+                        // map.addSource('twenty-five-million', {
+                        //     type: 'geojson',
+                        //     data: 'https://data.detroitmi.gov/resource/but4-ky7y.geojson?$where=permit_issued%3E%22' + permitDate + '%22%20AND%20permit_status=%22OPEN%22AND%20residential=%22NON-RESIDENTIAL%22AND%20estimated_cost%3E%221000000%22&$limit=50000'
+                        // });
                         /*map.addSource('over-twenty-five-million', {
                             type: 'geojson',
                             data: 'https://data.detroitmi.gov/resource/but4-ky7y.geojson?$where=permit_issued%3E%22' + permitDate + '%22%20AND%20permit_status=%22OPEN%22AND%20residential=%22NON-RESIDENTIAL%22AND%20estimated_cost%3E25000000&$limit=50000'
