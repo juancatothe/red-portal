@@ -1621,14 +1621,14 @@ a.property-app-link {
                             type: 'geojson',
                             data: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Targeted_Multifamily_Affordable_Housing/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnHiddenFields=false&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pgeojson&token='
                         });
-                        map.addSource('marketed-properties', {
-                            type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/hww8-8shf.geojson?$where=property_type%20like%20%27MARKETED%20LAND%27%20OR%20property_type%20=%20%27MARKETED%20BUILDING%27&$limit=50000'
-                        });
-                        map.addSource('tax-status-city-owned-properties', {
-                            type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/snut-x2sy.geojson?taxable_status=%27CITY%20OWNED%27&$limit=500000'
-                        });
+                        // map.addSource('marketed-properties', {
+                        //     type: 'geojson',
+                        //     data: 'https://data.detroitmi.gov/resource/hww8-8shf.geojson?$where=property_type%20like%20%27MARKETED%20LAND%27%20OR%20property_type%20=%20%27MARKETED%20BUILDING%27&$limit=50000'
+                        // });
+                        // map.addSource('tax-status-city-owned-properties', {
+                        //     type: 'geojson',
+                        //     data: 'https://data.detroitmi.gov/resource/snut-x2sy.geojson?taxable_status=%27CITY%20OWNED%27&$limit=500000'
+                        // });
                         // map.addSource('residential-permits', {
                         //     type: 'geojson',
                         //     data: 'https://data.detroitmi.gov/resource/but4-ky7y.geojson?$where=permit_issued%3E%22' + permitDate + '%22%20AND%20permit_status=%22OPEN%22AND%20residential=%22RESIDENTIAL%22&$limit=50000'
@@ -1641,57 +1641,57 @@ a.property-app-link {
                         //     type: 'geojson',
                         //     data: 'https://data.detroitmi.gov/resource/but4-ky7y.geojson?$where=permit_issued%3E%22' + permitDate + '%22%20AND%20permit_status=%22OPEN%22AND%20residential=%22NON-RESIDENTIAL%22AND%20estimated_cost%3E%221000000%22&$limit=50000'
                         // });
-                        /*map.addSource('over-twenty-five-million', {
-                            type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/but4-ky7y.geojson?$where=permit_issued%3E%22' + permitDate + '%22%20AND%20permit_status=%22OPEN%22AND%20residential=%22NON-RESIDENTIAL%22AND%20estimated_cost%3E25000000&$limit=50000'
-                        });*/
+                        // /*map.addSource('over-twenty-five-million', {
+                        //     type: 'geojson',
+                        //     data: 'https://data.detroitmi.gov/resource/but4-ky7y.geojson?$where=permit_issued%3E%22' + permitDate + '%22%20AND%20permit_status=%22OPEN%22AND%20residential=%22NON-RESIDENTIAL%22AND%20estimated_cost%3E25000000&$limit=50000'
+                        // });*/
                         map.addSource('dlba-structures', {
-                            type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/vsin-ur7i.geojson?$where=inventory_status_socrata%20=%20%22DLBA%20Owned%20Structure%22&$limit=50000'
+                            type: 'vector',
+                            url: 'mapbox://cityofdetroit.dlba_parcels'
                         });
                         map.addSource('dlba-vacant-lots', {
-                            type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/vsin-ur7i.geojson?$where=inventory_status_socrata%20=%20%22DLBA%20Owned%20Vacant%20Land%22&$limit=50000'
+                            type: 'vector',
+                            url: 'mapbox://cityofdetroit.dlba_parcels'
                         });
                         map.addSource('dlba-side-lots', {
-                            type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/vsin-ur7i.geojson?$where=inventory_status_socrata%20=%20%22DLBA%20Owned%20Sidelot%20For%20Sale%22&$limit=50000'
+                            type: 'vector',
+                            url: 'mapbox://cityofdetroit.dlba_parcels'
                         });
                         map.addSource('dlba-auctions', {
-                            type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/dw4j-vebq.geojson?$where=program%20=%20%22Auction%22&$limit=50000'
+                            type: 'vector',
+                            url: 'mapbox://cityofdetroit.for_sale'
                         });
                         map.addSource('dlba-rehabbed-and-ready', {
-                            type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/dw4j-vebq.geojson?$where=program%20=%20%22Rehabbed%20and%20Ready%22&$limit=50000'
+                            type: 'vector',
+                            url: 'mapbox://cityofdetroit.for_sale'
                         });
                         map.addSource('dlba-own-it-now', {
-                            type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/dw4j-vebq.geojson?$where=program%20=%20%22Own%20It%20Now%22&$limit=50000'
+                            type: 'vector',
+                            url: 'mapbox://cityofdetroit.for_sale'
                         });
                         map.addSource('peoplemover', {
                             type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/9vh5-izmf.geojson'
+                            data: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Detroit_People_Mover_Route/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson'
                         });
                         map.addSource('mogobikes', {
                             type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/2w3e-8kx8.geojson'
+                            data: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/MoGo_Bike_Share_Locations/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson'
                         });
                         map.addSource('ddotroutes', {
                             type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/j8mx-tq87.geojson'
+                            data: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/DDOT_Bus_Routes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson'
                         });
                         map.addSource('smartroutes', {
                             type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/sir9-mij9.geojson'
+                            data: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/SMART_Bus_Routes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson'
                         });
                         map.addSource('qlineroute', {
                             type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/kndx-njtp.geojson'
+                            data: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/QLine_Route/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson'
                         });
                         map.addSource('qlinestops', {
                             type: 'geojson',
-                            data: 'https://data.detroitmi.gov/resource/xenq-vym5.geojson'
+                            data: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/QLine_Stops/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson'
                         });
                         map.addLayer({
                             "id": "zoning",
@@ -2109,53 +2109,49 @@ a.property-app-link {
                         });
                         map.addLayer({
                             "id": "dlba-structures",
-                            "type": "circle",
+                            "type": "fill",
                             "source": "dlba-structures",
+                            "source-layer": "dlba_parcels",
+                            "filter": ['==', 'status', 'DLBA Owned Structure'],
                             "layout": {
                                 'visibility': 'none'
                             },
                             "paint": {
-                                'circle-radius': {
-                                    'base': 1.75,
-                                    'stops': [[12, 2], [22, 120]]
-                                },
-                                'circle-color': '#53ade9'
+                                'fill-color': '#53ade9'
                             }
                         });
                         map.addLayer({
                             "id": "dlba-vacant-lots",
-                            "type": "circle",
+                            "type": "fill",
                             "source": "dlba-vacant-lots",
+                            "source-layer": "dlba_parcels",
+                            "filter": ['==', 'status', 'DLBA Owned Vacant Land'],
                             "layout": {
                                 'visibility': 'none'
                             },
                             "paint": {
-                                'circle-radius': {
-                                    'base': 1.75,
-                                    'stops': [[12, 2], [22, 120]]
-                                },
-                                'circle-color': '#8cc9f2'
+                                'fill-color': '#8cc9f2'
                             }
                         });
                         map.addLayer({
                             "id": "dlba-side-lots",
-                            "type": "circle",
+                            "type": "fill",
                             "source": "dlba-side-lots",
+                            "source-layer": "dlba_parcels",
+                            "filter": ['==', 'status', 'DLBA Owned Sidelot For Sale'],
                             "layout": {
                                 'visibility': 'none'
                             },
                             "paint": {
-                                'circle-radius': {
-                                    'base': 1.75,
-                                    'stops': [[12, 2], [22, 120]]
-                                },
-                                'circle-color': '#81b2d3'
+                                'fill-color': '#81b2d3'
                             }
                         });
                         map.addLayer({
                             "id": "dlba-auctions",
                             "type": "circle",
                             "source": "dlba-auctions",
+                            "source-layer": "for_sale_mapbox",
+                            "filter": ["==", "program", "Auction"],
                             "layout": {
                                 'visibility': 'none'
                             },
@@ -2171,6 +2167,8 @@ a.property-app-link {
                             "id": "dlba-rehabbed-and-ready",
                             "type": "circle",
                             "source": "dlba-rehabbed-and-ready",
+                            "source-layer": "for_sale_mapbox",
+                            "filter": ["==", "program", "Rehabbed & Ready"],
                             "layout": {
                                 'visibility': 'none'
                             },
@@ -2186,6 +2184,8 @@ a.property-app-link {
                             "id": "dlba-own-it-now",
                             "type": "circle",
                             "source": "dlba-own-it-now",
+                            "source-layer": "for_sale_mapbox",
+                            "filter": ["==", "program", "Own It Now"],
                             "layout": {
                                 'visibility': 'none'
                             },
