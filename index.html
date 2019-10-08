@@ -2783,19 +2783,21 @@ a.property-app-link {
                         $('#loadscreen').show();
                         $.when(
                                         // Get the HTML
-                                        $.get("https://data.detroitmi.gov/resource/snut-x2sy.json?parcelnum=%27" + cleanParcelId + "%27", function(parcelPointsOwnership) {}, 'json'),
+                                        $.get(`https://apis.detroitmi.gov/assessments/parcel/${cleanParcelId}/?format=json`, function(parcelPointsOwnership) {}, 'json'),
                                         $.get("https://services2.arcgis.com/HsXtOCMp1Nis1Ogr/arcgis/rest/services/MCM_10012014_Enhanced/FeatureServer/0/query?where=CityParcelID2013%3D%27" + cleanParcelId + "%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=Photo_URL%2C+Occupancy&returnGeometry=false&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pjson&token=", function(occupancy) {}, 'json'),
-                                        $.get("https://data.detroitmi.gov/resource/vsin-ur7i.json?$select=parcel_id,inventory_status_socrata&parcel_id=%27" + cleanParcelId + "%27", function(dlbaInventory) {}, 'json'),
-                                        $.get("https://data.detroitmi.gov/resource/dw4j-vebq.json?$select=address,parcel_id,program&parcel_id=%27" + cleanParcelId + "%27", function(dlbaProgram) {}, 'json'),
-                                        $.get("https://data.detroitmi.gov/resource/uzpg-2pfj.json?$select=parcel_id,demolition_date&parcel_id=%27" + cleanParcelId + "%27", function(demolished) {}, 'json'),
-                                        $.get("https://data.detroitmi.gov/resource/hww8-8shf.json?pid=%27" + cleanParcelId + "%27", function(marketedPropStatus) { }, 'json'),
-                                        $.get('https://data.detroitmi.gov/resource/but4-ky7y.json?$where=permit_issued%3E%22' + permitDate + '%22%20AND%20permit_status=%22OPEN%22AND%20parcel_no=%22' + cleanParcelId + "%22", function(buildingPermits) {}, 'json'),
-                                        $.get('https://data.detroitmi.gov/resource/ibmm-yi2w.json?$where=parcelno=%22'+cleanParcelId+'%22', function(mcmReturn) {}, 'json'),
-                                        $.get('https://data.detroitmi.gov/resource/f3fy-ksxq.json?$where=parcelno=%22'+cleanParcelId+'%22', function(mcrReturn) {}, 'json'),
-                                        $.get('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/rosaparks_clairmount_mf/FeatureServer/0/query?where=apn+%3D+%27'+cleanParcelId+'%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pjson&token=', function(vacantMultiFamily) {}, 'json')
+                                        // $.get("https://data.detroitmi.gov/resource/vsin-ur7i.json?$select=parcel_id,inventory_status_socrata&parcel_id=%27" + cleanParcelId + "%27", function(dlbaInventory) {}, 'json'),
+                                        // $.get("https://data.detroitmi.gov/resource/dw4j-vebq.json?$select=address,parcel_id,program&parcel_id=%27" + cleanParcelId + "%27", function(dlbaProgram) {}, 'json'),
+                                        // $.get("https://data.detroitmi.gov/resource/uzpg-2pfj.json?$select=parcel_id,demolition_date&parcel_id=%27" + cleanParcelId + "%27", function(demolished) {}, 'json'),
+                                        // $.get("https://data.detroitmi.gov/resource/hww8-8shf.json?pid=%27" + cleanParcelId + "%27", function(marketedPropStatus) { }, 'json'),
+                                        // $.get('https://data.detroitmi.gov/resource/but4-ky7y.json?$where=permit_issued%3E%22' + permitDate + '%22%20AND%20permit_status=%22OPEN%22AND%20parcel_no=%22' + cleanParcelId + "%22", function(buildingPermits) {}, 'json'),
+                                        // $.get('https://data.detroitmi.gov/resource/ibmm-yi2w.json?$where=parcelno=%22'+cleanParcelId+'%22', function(mcmReturn) {}, 'json'),
+                                        // $.get('https://data.detroitmi.gov/resource/f3fy-ksxq.json?$where=parcelno=%22'+cleanParcelId+'%22', function(mcrReturn) {}, 'json'),
+                                        // $.get('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/rosaparks_clairmount_mf/FeatureServer/0/query?where=apn+%3D+%27'+cleanParcelId+'%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pjson&token=', function(vacantMultiFamily) {}, 'json')
                                     )
                                     .then(
-                                        function loadParcelInfo(parcelPointsOwnership, occupancy, dlbaInventory, dlbaProgram, demolished, marketedPropStatus, buildingPermits, mcmReturn, mcrReturn, vacantMultiFamily) {
+                                        function loadParcelInfo(parcelPointsOwnership, occupancy, 
+                                        // dlbaInventory, dlbaProgram, demolished, marketedPropStatus, buildingPermits, mcmReturn, mcrReturn, vacantMultiFamily
+                                        ) {
                                             var allowedToShow;
                                             if(parcelPointsOwnership[0].length===0 && (lat) && (long)){    
                                                 $('#map-sidebar-info').hide();
@@ -2831,8 +2833,10 @@ a.property-app-link {
                                             var cityOwnedDisclaimer = '<p><sup>Please note: For the most accurate information for City of Detroit owned land that is available for sale <a href="http://summitcommercialllc.catylist.com/search/" target="_blank">please contact Summit Commercial here</a>.</sup></p>';
 
                                             //go thru each field in parcel, create label, and append create variables to append
-                                            parcelPointsOwnership = parcelPointsOwnership[0][0];
-                                            for (var field in parcelPointsOwnership) {
+                                            parcelPointsOwnership = parcelPointsOwnership[0]
+                                            console.log(parcelPointsOwnership)
+                                            console.log(Object.keys(parcelPointsOwnership))
+                                            for (var field in Object.keys(parcelPointsOwnership)) {
                                                 if (parcelPointsOwnership.hasOwnProperty(field)) {
                                                     if (field == 'address') {
                                                         $('.map-sidebar-header').text(parcelPointsOwnership[field]);
@@ -2840,30 +2844,30 @@ a.property-app-link {
                                                         clean_address = parcelPointsOwnership[field];
                                                         property_address = parcelPointsOwnership[field];
                                                     }
-                                                    if (field == 'building_style') {
+                                                    if (field == 'RESSYTLE') {
                                                         label = 'Building Type';
                                                         building_type = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'council_district') {
+                                                    if (field == 'COUNCIL') {
                                                         label = 'Council District';
                                                         council_district = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'depth') {
+                                                    if (field == 'DEPTH') {
                                                         label = 'Depth';
                                                         depth = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'frontage') {
+                                                    if (field == 'FRONTAGE') {
                                                         label = 'Frontage';
                                                         frontage = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'land_value' && parseInt(parcelPointsOwnership[field]) > 0) {
+                                                    if (field == 'landvalue' && parseInt(parcelPointsOwnership[field]) > 0) {
                                                         label = 'Land Value';
                                                         num = parcelPointsOwnership[field];
                                                         num = parseInt(num);
                                                         parcelPointsOwnership[field] = '<span class="dollar-sign">$</span>' + num.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
                                                         land_value = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'last_sale_date') {
+                                                    if (field == 'SALEDATE') {
                                                         parcelPointsOwnership[field] = new Date(parcelPointsOwnership[field]);
                                                         var d = parcelPointsOwnership[field];
                                                         d = d.toString();
@@ -2873,83 +2877,83 @@ a.property-app-link {
                                                         label = 'Last Sale Date';
                                                         last_sale_date = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'last_sale_price' && parseInt(parcelPointsOwnership[field]) > 0) {
+                                                    if (field == 'SALEPRICE' && parseInt(parcelPointsOwnership[field]) > 0) {
                                                         label = 'Last Sale Price';
                                                         num = parcelPointsOwnership[field];
                                                         num = parseInt(num);
                                                         parcelPointsOwnership[field] = '<span class="dollar-sign">$</span>' + num.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
                                                         last_sale_price = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'legaldesc') {
+                                                    if (field == 'LEGALDESC') {
                                                         label = 'Legal Description';
                                                         legaldesc = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'owner1') {
+                                                    if (field == 'TAXPAYER1') {
                                                         label = 'Owner';
                                                         owner = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'owner_city') {
+                                                    if (field == 'TAXPCITY') {
                                                         owner_address = parcelPointsOwnership[field];
                                                     }
-                                                    if (field == 'owner_state') {
+                                                    if (field == 'TAXPSTATE') {
                                                         owner_address = owner_address + ", " + parcelPointsOwnership[field];
                                                     }
-                                                    if (field == 'owner_street') {
+                                                    if (field == 'TAXPADDR') {
                                                         owner_address = parcelPointsOwnership[field] + ", " + owner_address;
                                                     }
-                                                    if (field == 'owner_zip') {
+                                                    if (field == 'TAXPZIP') {
                                                         label = 'Owner Address';
                                                         owner_address = owner_address + ", " + parcelPointsOwnership[field];
                                                         parcelPointsOwnership[field] = owner_address;
                                                         owner_address = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'parcelnum') {
+                                                    if (field == 'PARCELNO') {
                                                         label = 'Parcel Number';
                                                         parcelnum = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'pre') {
+                                                    if (field == 'PRE') {
                                                         label = 'Principal Residence Exemption';
                                                         pre = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'sev' && parseInt(parcelPointsOwnership[field]) > 0) {
+                                                    if (field == 'SEV' && parseInt(parcelPointsOwnership[field]) > 0) {
                                                         label = 'State Equalized Value';
                                                         num = parcelPointsOwnership[field];
                                                         num = parseInt(num);
                                                         parcelPointsOwnership[field] = '<span class="dollar-sign">$</span>' + num.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
                                                         sev = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'sqft') {
+                                                    if (field == 'RESFLAREA') {
                                                         label = 'Square Footage';
                                                         num = parcelPointsOwnership[field];
                                                         num = num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
                                                         parcelPointsOwnership[field] = num;
                                                         sqft = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '<sup>2</sup></p>';
                                                     }
-                                                    if (field == 'taxable_status') {
+                                                    if (field == 'TAXSTATUS') {
                                                         label = 'Taxable Status';
                                                         taxable_status_token = parcelPointsOwnership[field];
                                                         taxable_status = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'taxable_value' && parseInt(parcelPointsOwnership[field]) > 0) {
+                                                    if (field == 'TXV' && parseInt(parcelPointsOwnership[field]) > 0) {
                                                         label = 'Taxable Value';
                                                         num = parcelPointsOwnership[field];
                                                         num = parseInt(num);
                                                         parcelPointsOwnership[field] = '<span class="dollar-sign">$</span>' + num.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
                                                         taxable_value = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'total_acres') {
+                                                    if (field == 'TOTALACREAGE') {
                                                         label = 'Total Acreage';
                                                         taxable_value = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'ward') {
+                                                    if (field == 'WARD') {
                                                         label = 'Ward';
                                                         ward = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'year_built' && parseInt(parcelPointsOwnership[field]) > 0) {
+                                                    if (field == 'RESYRBUILT' && parseInt(parcelPointsOwnership[field]) > 0) {
                                                         label = 'Year Built';
                                                         year_built = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ':</span> ' + parcelPointsOwnership[field] + '</p>';
                                                     }
-                                                    if (field == 'zip_code') {
+                                                    if (field == 'ZIPCODE') {
                                                         label = 'Property Address';
                                                         property_address = '<p data-field="property_address"><span class="field-label">' + label.toUpperCase() + ':</span> ' + property_address + ', DETROIT, MI, ' + parcelPointsOwnership[field] + '</p>';
                                                     }
@@ -2968,134 +2972,134 @@ a.property-app-link {
                                             //createSVGIcons();
 
                                             //test for landbank status
-                                            var isDlba = dlbaInventory[0].length;
-                                            var isDemolished = demolished[0].length;
-                                            var isDlbaProgram = dlbaProgram[0].length;
-                                            if(isDlba){var dlbaInventoryStatus = dlbaInventory[0][0].inventory_status_socrata};
-                                            console.log(dlbaInventory[0]);
+                                            // var isDlba = dlbaInventory[0].length;
+                                            // var isDemolished = demolished[0].length;
+                                            // var isDlbaProgram = dlbaProgram[0].length;
+                                            // if(isDlba){var dlbaInventoryStatus = dlbaInventory[0][0].inventory_status_socrata};
+                                            // console.log(dlbaInventory[0]);
 
                                             //if property is demolished, append demo date
-                                            if (isDemolished > 0) {
-                                                demolition_date = demolished[0][0].demolition_date;
-                                                demolition_date = new Date(demolition_date);
-                                                var d = demolition_date;
-                                                d = d.toString();
-                                                d = d.split(' ');
-                                                d = d[1] + " " + d[2] + ", " + d[3];
-                                                demolition_date = d;
-                                                label = 'Demolition Date';
-                                                demolition_date = '<p data-field="demolition_date"><span class="field-label">' + label.toUpperCase() + ':</span> ' + demolition_date + '</p>';
-                                            }
+                                            // if (isDemolished > 0) {
+                                            //     demolition_date = demolished[0][0].demolition_date;
+                                            //     demolition_date = new Date(demolition_date);
+                                            //     var d = demolition_date;
+                                            //     d = d.toString();
+                                            //     d = d.split(' ');
+                                            //     d = d[1] + " " + d[2] + ", " + d[3];
+                                            //     demolition_date = d;
+                                            //     label = 'Demolition Date';
+                                            //     demolition_date = '<p data-field="demolition_date"><span class="field-label">' + label.toUpperCase() + ':</span> ' + demolition_date + '</p>';
+                                            // }
 
                                             //if land bank, determine program type to append to list
-                                            if (isDlba > 0) {
-                                                if (isDlbaProgram) {
-                                                    program_type = dlbaProgram[0][0].program;
-                                                    dlba_address = dlbaProgram[0][0].address;
-                                                    dlba_address = dlba_address.split(' ').join('+');
-                                                    if (program_type === "Auction") {
-                                                        buy_property_btn_url = 'https://buildingdetroit.org/properties?category=&property_choose=on&location=' + dlba_address;
-                                                        buy_property_btn_class = 'dlba-auction';
-                                                        buy_property_btn_label = 'View This Property';
-                                                    }
-                                                    if (program_type === "Own It Now") {
-                                                        buy_property_btn_url = 'https://buildingdetroit.org/properties?category=&property_choose=on&location=' + dlba_address;
-                                                        buy_property_btn_class = 'dlba-own-it-now';
-                                                        buy_property_btn_label = 'View This Property';
-                                                    }
-                                                    if (program_type === "Rehabbed and Ready") {
-                                                        buy_property_btn_url = 'https://buildingdetroit.org/properties?category=&property_choose=on&location=' + dlba_address;
-                                                        buy_property_btn_class = 'dlba-rehabbed-and-ready';
-                                                        buy_property_btn_label = 'View This Property';
-                                                    }
+                                            // if (isDlba > 0) {
+                                            //     if (isDlbaProgram) {
+                                            //         program_type = dlbaProgram[0][0].program;
+                                            //         dlba_address = dlbaProgram[0][0].address;
+                                            //         dlba_address = dlba_address.split(' ').join('+');
+                                            //         if (program_type === "Auction") {
+                                            //             buy_property_btn_url = 'https://buildingdetroit.org/properties?category=&property_choose=on&location=' + dlba_address;
+                                            //             buy_property_btn_class = 'dlba-auction';
+                                            //             buy_property_btn_label = 'View This Property';
+                                            //         }
+                                            //         if (program_type === "Own It Now") {
+                                            //             buy_property_btn_url = 'https://buildingdetroit.org/properties?category=&property_choose=on&location=' + dlba_address;
+                                            //             buy_property_btn_class = 'dlba-own-it-now';
+                                            //             buy_property_btn_label = 'View This Property';
+                                            //         }
+                                            //         if (program_type === "Rehabbed and Ready") {
+                                            //             buy_property_btn_url = 'https://buildingdetroit.org/properties?category=&property_choose=on&location=' + dlba_address;
+                                            //             buy_property_btn_class = 'dlba-rehabbed-and-ready';
+                                            //             buy_property_btn_label = 'View This Property';
+                                            //         }
 
-                                                    buy_property_btn = '<a class="property-app-link" target="_blank" href="' + buy_property_btn_url + '"><span data-program="' + program_type + '">' + buy_property_btn_label + '</span></a>';
-                                                    label = 'Detroit Land Bank Program';
-                                                    program_type = '<p data-field=""><span class="field-label">' + label.toUpperCase() + ':</span> ' + program_type + '</p>';
-                                                } else if (dlbaInventoryStatus === "DLBA Owned Sidelot For Sale") {
-                                                    dlba_address = clean_address;
-                                                    dlba_address = dlba_address.split(' ').join('+');
-                                                    program_type = dlbaInventoryStatus;
-                                                    label = 'Detroit Land Bank Program';
-                                                    buy_property_btn_url = 'https://buildingdetroit.org/sidelots?category=&property_choose=on&location=' + dlba_address;
-                                                    buy_property_btn_label = 'Buy this Sidelot';
-                                                    buy_property_btn_class = 'dlba-sidelot';
-                                                    buy_property_btn = '<a class="property-app-link" target="_blank" href="' + buy_property_btn_url + '"><span data-program="' + program_type + '">' + buy_property_btn_label + '</span></a>';
-                                                    program_type = '<p data-field=""><span class="field-label">' + label.toUpperCase() + ':</span> ' + program_type + '</p>';
-                                                } else {
-                                                    label = 'Detroit Land Bank Program';
-                                                    program_type = dlbaInventoryStatus;
-                                                    program_type = '<p data-field=""><span class="field-label">' + label.toUpperCase() + ':</span> ' + program_type + '</p>';
-                                                    buy_property_btn_url = 'http://app.detroitmi.gov/PropertyApplicationForm'/*'https://juancatothe.github.io/commercial_property_wizard/?reference=Detroit_Development&address=' + dlba_address*/;
-                                                    buy_property_btn_label = 'Inquire to Buy This Property';
-                                                    buy_property_btn_class = 'dlba-not-marketed';
-                                                    buy_property_btn = '<a class="property-app-link" target="_blank" href="' + buy_property_btn_url + '">' + buy_property_btn_label + '</span></a>';
-                                                }
-                                            }
-                                            if(taxable_status_token === "CITY OWNED"|| (vacantMultiFamily[0].features.length>0 && vacantMultiFamily[0].features[0].attributes.Owner === "PDD")||(vacantMultiFamily[0].features.length>0 && vacantMultiFamily[0].features[0].attributes.Owner === "DLBA")){
-                                                    buy_property_btn_url = 'http://app.detroitmi.gov/PropertyApplicationForm'/*'https://juancatothe.github.io/commercial_property_wizard/?reference=Detroit_Development&address=' + dlba_address*/;
-                                                    buy_property_btn_label = 'Inquire to Buy This Property'
-                                                    buy_property_btn_class = 'marketed-properties';
-                                                    buy_property_btn = '<a class="property-app-link" target="_blank" href="' + buy_property_btn_url + '"><span>' + buy_property_btn_label + '</span></a>';
-                                            }
-                                            try{
-                                                    if(marketedPropStatus[0][0].property_type === "NOT FOR SALE"){
-                                                        buy_property_btn = '';
-                                                }else{
-                                                    var str = address;
-                                                    var address = str.split(' ').join('+');
-                                                    buy_property_btn_url = 
-                                                    'http://summitcommercialllc.catylist.com/jsp/search/results.jsp?street1='+address+'&submit_searchid=Go#p=1,50|s=CITY,0|c=street1:'+address+';search2:true;propertyType:;subtype:;groupSuites:1;|ac=StreetAddress,Keyword,Location:[],PropertyType,UseType,SalePrice,LeasePrice,Size,SaleLease|gs=1|h=|tl=Page%201|hid=0|';
-                                                    buy_property_btn_label = 'Inquire to Buy This Property'
-                                                    buy_property_btn_class = 'marketed-properties';
-                                                    buy_property_btn = '<a class="property-app-link '+buy_property_btn_class+'" target="_blank" href="' + buy_property_btn_url + '"><span>' + buy_property_btn_label + '</span></a>';
-                                                }
-                                                }catch(e){
-                                                   //console.log("YO",e)
-                                                }
+                                            //         buy_property_btn = '<a class="property-app-link" target="_blank" href="' + buy_property_btn_url + '"><span data-program="' + program_type + '">' + buy_property_btn_label + '</span></a>';
+                                            //         label = 'Detroit Land Bank Program';
+                                            //         program_type = '<p data-field=""><span class="field-label">' + label.toUpperCase() + ':</span> ' + program_type + '</p>';
+                                            //     } else if (dlbaInventoryStatus === "DLBA Owned Sidelot For Sale") {
+                                            //         dlba_address = clean_address;
+                                            //         dlba_address = dlba_address.split(' ').join('+');
+                                            //         program_type = dlbaInventoryStatus;
+                                            //         label = 'Detroit Land Bank Program';
+                                            //         buy_property_btn_url = 'https://buildingdetroit.org/sidelots?category=&property_choose=on&location=' + dlba_address;
+                                            //         buy_property_btn_label = 'Buy this Sidelot';
+                                            //         buy_property_btn_class = 'dlba-sidelot';
+                                            //         buy_property_btn = '<a class="property-app-link" target="_blank" href="' + buy_property_btn_url + '"><span data-program="' + program_type + '">' + buy_property_btn_label + '</span></a>';
+                                            //         program_type = '<p data-field=""><span class="field-label">' + label.toUpperCase() + ':</span> ' + program_type + '</p>';
+                                            //     } else {
+                                            //         label = 'Detroit Land Bank Program';
+                                            //         program_type = dlbaInventoryStatus;
+                                            //         program_type = '<p data-field=""><span class="field-label">' + label.toUpperCase() + ':</span> ' + program_type + '</p>';
+                                            //         buy_property_btn_url = 'http://app.detroitmi.gov/PropertyApplicationForm'/*'https://juancatothe.github.io/commercial_property_wizard/?reference=Detroit_Development&address=' + dlba_address*/;
+                                            //         buy_property_btn_label = 'Inquire to Buy This Property';
+                                            //         buy_property_btn_class = 'dlba-not-marketed';
+                                            //         buy_property_btn = '<a class="property-app-link" target="_blank" href="' + buy_property_btn_url + '">' + buy_property_btn_label + '</span></a>';
+                                            //     }
+                                            // }
+                                            // if(taxable_status_token === "CITY OWNED"|| (vacantMultiFamily[0].features.length>0 && vacantMultiFamily[0].features[0].attributes.Owner === "PDD")||(vacantMultiFamily[0].features.length>0 && vacantMultiFamily[0].features[0].attributes.Owner === "DLBA")){
+                                            //         buy_property_btn_url = 'http://app.detroitmi.gov/PropertyApplicationForm'/*'https://juancatothe.github.io/commercial_property_wizard/?reference=Detroit_Development&address=' + dlba_address*/;
+                                            //         buy_property_btn_label = 'Inquire to Buy This Property'
+                                            //         buy_property_btn_class = 'marketed-properties';
+                                            //         buy_property_btn = '<a class="property-app-link" target="_blank" href="' + buy_property_btn_url + '"><span>' + buy_property_btn_label + '</span></a>';
+                                            // }
+                                            // try{
+                                            //         if(marketedPropStatus[0][0].property_type === "NOT FOR SALE"){
+                                            //             buy_property_btn = '';
+                                            //     }else{
+                                            //         var str = address;
+                                            //         var address = str.split(' ').join('+');
+                                            //         buy_property_btn_url = 
+                                            //         'http://summitcommercialllc.catylist.com/jsp/search/results.jsp?street1='+address+'&submit_searchid=Go#p=1,50|s=CITY,0|c=street1:'+address+';search2:true;propertyType:;subtype:;groupSuites:1;|ac=StreetAddress,Keyword,Location:[],PropertyType,UseType,SalePrice,LeasePrice,Size,SaleLease|gs=1|h=|tl=Page%201|hid=0|';
+                                            //         buy_property_btn_label = 'Inquire to Buy This Property'
+                                            //         buy_property_btn_class = 'marketed-properties';
+                                            //         buy_property_btn = '<a class="property-app-link '+buy_property_btn_class+'" target="_blank" href="' + buy_property_btn_url + '"><span>' + buy_property_btn_label + '</span></a>';
+                                            //     }
+                                            //     }catch(e){
+                                            //        //console.log("YO",e)
+                                            //     }
 
                                             //get occupancy status and street image
-                                            if (!occupancy[0].features[0] || occupancy[0].features[0].attributes.Occupancy === null) {
-                                                occupancy_status = '';
-                                                occupancy_status = '';
-                                                utilities = '';
-                                            } else {
-                                                if (occupancy[0].features[0].attributes.Occupancy == "occupied") {
-                                                    occupancy_status = "Likely Occupied";
-                                                    occupancy_status_color = "#B33A3A";
-                                                    utilities = water + electric + gas;
-                                                };
-                                                if (occupancy[0].features[0].attributes.Occupancy == "maybe") {
-                                                    occupancy_status = "Possibly Occupied";
-                                                    occupancy_status_color = "#FFCC00";
-                                                    utilities = '';
-                                                };
-                                                if (occupancy[0].features[0].attributes.Occupancy == "unoccupied") {
-                                                    occupancy_status = "Likely Unoccupied";
-                                                    occupancy_status_color = "#009900";
-                                                    utilities = '';
-                                                };
-                                                if (!occupancy[0].features[0].attributes.Occupancy || isDemolished > 0) {
-                                                    occupancy_status = "Likely Vacant Lot";
-                                                    occupancy_status_color = "#009900";
-                                                    utilities = '';
-                                                };   
-                                                if (isDlba > 0 || isDlbaProgram > 0) {
-                                                    if(dlbaInventoryStatus === "DLBA Owned Sidelot For Sale"){
-                                                        occupancy_status = "Likely Vacant Lot";
-                                                        occupancy_status_color = "#009900";
-                                                    }else{
-                                                        occupancy_status = "Likely Unoccupied";
-                                                        occupancy_status_color = "#009900";
-                                                    }
-                                                }
+                                            // if (!occupancy[0].features[0] || occupancy[0].features[0].attributes.Occupancy === null) {
+                                            //     occupancy_status = '';
+                                            //     occupancy_status = '';
+                                            //     utilities = '';
+                                            // } else {
+                                            //     if (occupancy[0].features[0].attributes.Occupancy == "occupied") {
+                                            //         occupancy_status = "Likely Occupied";
+                                            //         occupancy_status_color = "#B33A3A";
+                                            //         utilities = water + electric + gas;
+                                            //     };
+                                            //     if (occupancy[0].features[0].attributes.Occupancy == "maybe") {
+                                            //         occupancy_status = "Possibly Occupied";
+                                            //         occupancy_status_color = "#FFCC00";
+                                            //         utilities = '';
+                                            //     };
+                                            //     if (occupancy[0].features[0].attributes.Occupancy == "unoccupied") {
+                                            //         occupancy_status = "Likely Unoccupied";
+                                            //         occupancy_status_color = "#009900";
+                                            //         utilities = '';
+                                            //     };
+                                            //     if (!occupancy[0].features[0].attributes.Occupancy || isDemolished > 0) {
+                                            //         occupancy_status = "Likely Vacant Lot";
+                                            //         occupancy_status_color = "#009900";
+                                            //         utilities = '';
+                                            //     };   
+                                            //     if (isDlba > 0 || isDlbaProgram > 0) {
+                                            //         if(dlbaInventoryStatus === "DLBA Owned Sidelot For Sale"){
+                                            //             occupancy_status = "Likely Vacant Lot";
+                                            //             occupancy_status_color = "#009900";
+                                            //         }else{
+                                            //             occupancy_status = "Likely Unoccupied";
+                                            //             occupancy_status_color = "#009900";
+                                            //         }
+                                            //     }
                                                 occupancy_status = '<!--p data-field="Occupancy" class="occupancy"><span class="occupancy-status-color"  style=background:' + occupancy_status_color + '></span><span class="occupancy-status" data-field="' + occupancy_status + '">' + occupancy_status + '</span><sup class="disclaimer">0</sup></p-->';
                                                 if (occupancy[0].features[0].attributes.Photo_URL) {
                                                     var parcelImage = occupancy[0].features[0].attributes.Photo_URL;
                                                     parcelImage = '<div data-field="Photo_URL" class="frame"><img alt="Photo of" src="' + parcelImage + '"/></div>';
                                                 }
 
-                                            }
+                                            // }
 
                                             //append information to sidebar
                                             $('#map-sidebar-info .occupancy-data').append(buy_property_btn, parcelImage, occupancy_status);
@@ -3103,107 +3107,107 @@ a.property-app-link {
                                             $('#map-sidebar-info .additional-data').append('<h5><span>Additional Data</span></h5>', last_sale_date, last_sale_price, year_built, parcelnum, sev, taxable_status, land_value, taxable_value, pre, total_acres, frontage, depth, sqft, ward, legaldesc, '<br><br>', occupancyDisclaimer, assessorsDisclaimer);
                                             
                                             
-                                            if(marketedPropStatus[0].length>0 || taxable_status_token === "CITY OWNED"){
-                                                $('#map-sidebar-info .additional-data').append(cityOwnedDisclaimer);
-                                            }
+                                            // if(marketedPropStatus[0].length>0 || taxable_status_token === "CITY OWNED"){
+                                            //     $('#map-sidebar-info .additional-data').append(cityOwnedDisclaimer);
+                                            // }
                                             
-                                            if(mcmReturn[0].length>0){
-                                                var address, business, bizDesc, bizURL, track;
-                                                var mcmBusiness = mcmReturn[0];
-                                                for (var i = 0; i < mcmBusiness.length; i++) {
-                                                    for (var field in mcmBusiness[i]) {
-                                                        if (mcmBusiness[i].hasOwnProperty(field)) {
-                                                            if (field == 'business_address') {
-                                                                if(i>0){
-                                                                    address = mcmBusiness[i][field] + ", " + address;    
-                                                                }else{
-                                                                    address = mcmBusiness[i][field];
-                                                                }
-                                                            }
-                                                            if (field == 'business') {
-                                                                business = mcmBusiness[i][field];
-                                                            }
-                                                            if (field == 'description') {
-                                                                bizDesc = mcmBusiness[i][field];
-                                                            }
-                                                            if (field == 'url') {
-                                                                bizURL = mcmBusiness[i][field];
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                $('#map-sidebar-info .mcm-data').prepend('<h5><span>Motor City Match</span></h5>');
-                                                $('#map-sidebar-info .occupancy').remove();
-                                                $('#map-sidebar-info .occupancy-data').append('<!--p data-field="Occupancy" class="occupancy"><span class="occupancy-status-color"  style="background: #B33A3A"></span><span class="occupancy-status">Likely Occupied</span><sup class="disclaimer">0</sup></p-->');
-                                                $('.mcm-data').append('<p class="mc-business">' + business + '</p>');
-                                                $('.mcm-data').append('<p class="mc-business-address">' + address + '</p>');
-                                                if(bizURL){
-                                                    if(bizURL != "N/A"){$('.mcm-data').append('<p><a class="mc-business-link" href="' + bizURL + '" alt="' + business + ' Website Link" target="_blank">Website</a></p>')};
-                                                   }
-                                                $('.mcm-data').append('<p>' + bizDesc + '</p>');
-                                                $('.mcm-data').show();                                                
-                                            }
+                                            // if(mcmReturn[0].length>0){
+                                            //     var address, business, bizDesc, bizURL, track;
+                                            //     var mcmBusiness = mcmReturn[0];
+                                            //     for (var i = 0; i < mcmBusiness.length; i++) {
+                                            //         for (var field in mcmBusiness[i]) {
+                                            //             if (mcmBusiness[i].hasOwnProperty(field)) {
+                                            //                 if (field == 'business_address') {
+                                            //                     if(i>0){
+                                            //                         address = mcmBusiness[i][field] + ", " + address;    
+                                            //                     }else{
+                                            //                         address = mcmBusiness[i][field];
+                                            //                     }
+                                            //                 }
+                                            //                 if (field == 'business') {
+                                            //                     business = mcmBusiness[i][field];
+                                            //                 }
+                                            //                 if (field == 'description') {
+                                            //                     bizDesc = mcmBusiness[i][field];
+                                            //                 }
+                                            //                 if (field == 'url') {
+                                            //                     bizURL = mcmBusiness[i][field];
+                                            //                 }
+                                            //             }
+                                            //         }
+                                            //     }
+                                            //     $('#map-sidebar-info .mcm-data').prepend('<h5><span>Motor City Match</span></h5>');
+                                            //     $('#map-sidebar-info .occupancy').remove();
+                                            //     $('#map-sidebar-info .occupancy-data').append('<!--p data-field="Occupancy" class="occupancy"><span class="occupancy-status-color"  style="background: #B33A3A"></span><span class="occupancy-status">Likely Occupied</span><sup class="disclaimer">0</sup></p-->');
+                                            //     $('.mcm-data').append('<p class="mc-business">' + business + '</p>');
+                                            //     $('.mcm-data').append('<p class="mc-business-address">' + address + '</p>');
+                                            //     if(bizURL){
+                                            //         if(bizURL != "N/A"){$('.mcm-data').append('<p><a class="mc-business-link" href="' + bizURL + '" alt="' + business + ' Website Link" target="_blank">Website</a></p>')};
+                                            //        }
+                                            //     $('.mcm-data').append('<p>' + bizDesc + '</p>');
+                                            //     $('.mcm-data').show();                                                
+                                            // }
                                             
-                                            if(mcrReturn[0].length>0){
-                                                var address, business, bizDesc, bizURL, track;
-                                                var mcRestore = mcrReturn[0];
-                                                for (var i = 0; i < mcRestore.length; i++) {
-                                                    for (var field in mcRestore[i]) {
-                                                        if (mcRestore[i].hasOwnProperty(field)) {
-                                                            if (field == 'track') {
-                                                                if(i>0){
-                                                                    track = mcRestore[i][field] + ", " + track;    
-                                                                }else{
-                                                                    track = mcRestore[i][field];
-                                                                }
-                                                            }
-                                                            if (field == 'business_address') {
-                                                                if(i>0){
-                                                                    address = mcRestore[i][field] + ", " + address;    
-                                                                }else{
-                                                                    address = mcRestore[i][field];
-                                                                }
-                                                            }
-                                                            if (field == 'business') {
-                                                                business = mcRestore[i][field];
-                                                            }
-                                                            if (field == 'description') {
-                                                                bizDesc = mcRestore[i][field];
-                                                            }
-                                                            if (field == 'website') {
-                                                                bizURL = mcRestore[i][field];
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                $('#map-sidebar-info .mcr-data').prepend('<h5><span>Motor City Restore</span></h5>');
-                                                $('.mcr-data').append('<p class="mc-business">' + business + '</p>');
-                                                if(bizURL || bizURL != "N/A"){$('.mcr-data').append('<p><a class="mc-business-link" href="' + bizURL + '" alt="' + business + ' Website Link" target="_blank">Website</a></p>')};
-                                                $('.mcr-data').append('<p>' + bizDesc + '</p>');
-                                                $('.mcr-data').append('<p><span class="field-label">Award Type: </span>' + track + '</p>');
-                                                $('.mcr-data').append('<p><span class="field-label">Business Address: </span>' + address + '</p>');
-                                                $('.mcr-data').show();                                                
-                                            }
+                                            // if(mcrReturn[0].length>0){
+                                            //     var address, business, bizDesc, bizURL, track;
+                                            //     var mcRestore = mcrReturn[0];
+                                            //     for (var i = 0; i < mcRestore.length; i++) {
+                                            //         for (var field in mcRestore[i]) {
+                                            //             if (mcRestore[i].hasOwnProperty(field)) {
+                                            //                 if (field == 'track') {
+                                            //                     if(i>0){
+                                            //                         track = mcRestore[i][field] + ", " + track;    
+                                            //                     }else{
+                                            //                         track = mcRestore[i][field];
+                                            //                     }
+                                            //                 }
+                                            //                 if (field == 'business_address') {
+                                            //                     if(i>0){
+                                            //                         address = mcRestore[i][field] + ", " + address;    
+                                            //                     }else{
+                                            //                         address = mcRestore[i][field];
+                                            //                     }
+                                            //                 }
+                                            //                 if (field == 'business') {
+                                            //                     business = mcRestore[i][field];
+                                            //                 }
+                                            //                 if (field == 'description') {
+                                            //                     bizDesc = mcRestore[i][field];
+                                            //                 }
+                                            //                 if (field == 'website') {
+                                            //                     bizURL = mcRestore[i][field];
+                                            //                 }
+                                            //             }
+                                            //         }
+                                            //     }
+                                            //     $('#map-sidebar-info .mcr-data').prepend('<h5><span>Motor City Restore</span></h5>');
+                                            //     $('.mcr-data').append('<p class="mc-business">' + business + '</p>');
+                                            //     if(bizURL || bizURL != "N/A"){$('.mcr-data').append('<p><a class="mc-business-link" href="' + bizURL + '" alt="' + business + ' Website Link" target="_blank">Website</a></p>')};
+                                            //     $('.mcr-data').append('<p>' + bizDesc + '</p>');
+                                            //     $('.mcr-data').append('<p><span class="field-label">Award Type: </span>' + track + '</p>');
+                                            //     $('.mcr-data').append('<p><span class="field-label">Business Address: </span>' + address + '</p>');
+                                            //     $('.mcr-data').show();                                                
+                                            // }
                                             
-                                            if(vacantMultiFamily[0].features.length>0){
-                                                var owner, resource;
-                                                if(vacantMultiFamily[0].features[0].attributes.Owner === "PDD"||vacantMultiFamily[0].features[0].attributes.Owner === "DLBA"){
-                                                    resource = 'Resources for Potential Buyers: <br><br>Click button above to inquire to purchase property.<br><br>Learn more about tax and financial incentives for rehabilition <a target="_self" href="http://detroitmi.gov/Detroit-Opportunities/Detroit-Development/Detroit-Development-Financing">here</a>.'
-                                                }else{
-                                                    resource = 'Resources for Owners: <br><br>Click <a target="_blank" href="http://detroitmi.gov/Detroit-Opportunities/Detroit-Development/How-To-Develop-in-Detroit#vacant-multifamily">here</a> for tax and financial incentives.'
-                                                }
-                                                $('#map-sidebar-info .mcr-data').prepend('<h5><span>Vacant Multifamily</span></h5>');
-                                                $('.mcr-data').append('<p class="vacant-resource">' + resource + '</p>');
-                                                $('.mcr-data').show();                                                
-                                            }
+                                            // if(vacantMultiFamily[0].features.length>0){
+                                            //     var owner, resource;
+                                            //     if(vacantMultiFamily[0].features[0].attributes.Owner === "PDD"||vacantMultiFamily[0].features[0].attributes.Owner === "DLBA"){
+                                            //         resource = 'Resources for Potential Buyers: <br><br>Click button above to inquire to purchase property.<br><br>Learn more about tax and financial incentives for rehabilition <a target="_self" href="http://detroitmi.gov/Detroit-Opportunities/Detroit-Development/Detroit-Development-Financing">here</a>.'
+                                            //     }else{
+                                            //         resource = 'Resources for Owners: <br><br>Click <a target="_blank" href="http://detroitmi.gov/Detroit-Opportunities/Detroit-Development/How-To-Develop-in-Detroit#vacant-multifamily">here</a> for tax and financial incentives.'
+                                            //     }
+                                            //     $('#map-sidebar-info .mcr-data').prepend('<h5><span>Vacant Multifamily</span></h5>');
+                                            //     $('.mcr-data').append('<p class="vacant-resource">' + resource + '</p>');
+                                            //     $('.mcr-data').show();                                                
+                                            // }
                                             
-                                            if(buildingPermits[0].length>0){
-                                                //get Permits Info
-                                                getPermitInfo(buildingPermits[0]);
-                                                $('.permit-data').show();
-                                            }else{
-                                                $('.permit-data').hide();
-                                            }
+                                            // if(buildingPermits[0].length>0){
+                                            //     //get Permits Info
+                                            //     getPermitInfo(buildingPermits[0]);
+                                            //     $('.permit-data').show();
+                                            // }else{
+                                            //     $('.permit-data').hide();
+                                            // }
                                             
                                             if(allowedToShow){
                                                 $('#loadscreen').hide();
@@ -3239,16 +3243,16 @@ a.property-app-link {
                             var predevelopmentRFPFeatures = null;
                             var completedRFPFeatures = null;
                             try {
-                                residentialPermitFeatures = map.queryRenderedFeatures(e.point, { layers: ['residential-permits'] });
-                                oneMillionPermitFeatures = map.queryRenderedFeatures(e.point, { layers: ['one-million'] });
-                                twentyFiveMillionPermitFeatures = map.queryRenderedFeatures(e.point, { layers: ['twenty-five-million'] });
+                                // residentialPermitFeatures = map.queryRenderedFeatures(e.point, { layers: ['residential-permits'] });
+                                // oneMillionPermitFeatures = map.queryRenderedFeatures(e.point, { layers: ['one-million'] });
+                                // twentyFiveMillionPermitFeatures = map.queryRenderedFeatures(e.point, { layers: ['twenty-five-million'] });
                                 //overTwentyFiveMillionPermitFeatures = map.queryRenderedFeatures(e.point, { layers: ['over-twenty-five-million'] });
-                                snfAreasFeatures = map.queryRenderedFeatures(e.point, { layers: ['snf-fill'] });
-                                planningAreasFeatures = map.queryRenderedFeatures(e.point, { layers: ['planning-areas-fill'] });
-                                completedPlanningAreasFeatures = map.queryRenderedFeatures(e.point, { layers: ['completed-planning-projects-fill'] });
+                                // snfAreasFeatures = map.queryRenderedFeatures(e.point, { layers: ['snf-fill'] });
+                                // planningAreasFeatures = map.queryRenderedFeatures(e.point, { layers: ['planning-areas-fill'] });
+                                // completedPlanningAreasFeatures = map.queryRenderedFeatures(e.point, { layers: ['completed-planning-projects-fill'] });
                                 parcelFeatures = map.queryRenderedFeatures(e.point, { layers: ['parcel-fill'] });
-                                marketedPropFeatures = map.queryRenderedFeatures(e.point, { layers: ['marketed-properties'] });
-                                taxStatusCityFeatures = map.queryRenderedFeatures(e.point, { layers: ['tax-status-city-owned-properties']});
+                                // marketedPropFeatures = map.queryRenderedFeatures(e.point, { layers: ['marketed-properties'] });
+                                // taxStatusCityFeatures = map.queryRenderedFeatures(e.point, { layers: ['tax-status-city-owned-properties']});
                                 mcmBusinessFeatures = map.queryRenderedFeatures(e.point, { layers: ['mcm-business'] });
                                 mcRestoreFeatures = map.queryRenderedFeatures(e.point, { layers: ['mc-restore'] });
                                 inConstructionRFPFeatures = map.queryRenderedFeatures(e.point, { layers: ['in-construction-rfp-fill'] });
