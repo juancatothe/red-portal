@@ -2957,7 +2957,7 @@
         "json"
       ),
       $.get(
-        `https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/DLBA_Owned_Properties/FeatureServer/0/query?where=parcel_id%3D%27${cleanParcelId}%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=json&token=`,
+        `https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/DLBA_Owned_Properties/FeatureServer/0/query?where=parcel_id%3D%27${cleanParcelId}%27&outFields=*&f=json`,
         function(dlbaInventory) {},
         "json"
       ),
@@ -2989,7 +2989,7 @@
       if (parcelPointsOwnership[0].length === 0 && lat && long) {
         $("#map-sidebar-info").hide();
         $("#loadscreen").show();
-        allowedToShow = false;
+        allowedToShow = true;
         $.getJSON("https://data.detroitmi.gov/resource/tk3f-vp8k.json?$where=intersects(the_geom, 'POINT (" + long + " " + lat + ")')", function(data) {
           //console.log(data[0].parcelnum);
           try {
@@ -3231,16 +3231,16 @@
       //createSVGIcons();
 
       //test for landbank status
-      var isDlba = dlbaInventory[0].length;
-      var isDemolished = demolished[0].length;
-      var isDlbaProgram = dlbaProgram[0].length;
+      var isDlba = dlbaInventory[0].features.length ;
+      var isDemolished = demolished[0].features.length;
+      var isDlbaProgram = dlbaProgram[0].features.length;
       if (isDlba) {
-        var dlbaInventoryStatus = dlbaInventory[0][0].inventory_status_socrata;
+        var dlbaInventoryStatus = dlbaInventory[0].features[0].attributes.inventory_status_socrata;
       }
 
       // if property is demolished, append demo date
       if (isDemolished > 0) {
-        demolition_date = demolished[0][0].demolition_date;
+        demolition_date = demolished[0].features[0].attributes.demolition_date;
         demolition_date = new Date(demolition_date);
         var d = demolition_date;
         d = d.toString();
@@ -3254,8 +3254,8 @@
       //if land bank, determine program type to append to list
       if (isDlba > 0) {
         if (isDlbaProgram) {
-          program_type = dlbaProgram[0][0].program;
-          dlba_address = dlbaProgram[0][0].address;
+          program_type = dlbaProgram[0].features[0].attributes.program;
+          dlba_address = dlbaProgram[0].features[0].attributes.address;
           dlba_address = dlba_address.split(" ").join("+");
           if (program_type === "Auction") {
             buy_property_btn_url = "https://buildingdetroit.org/properties?category=&property_choose=on&location=" + dlba_address;
