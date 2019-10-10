@@ -1821,28 +1821,28 @@
     map.addSource("peoplemover", {
       type: "geojson",
       data:
-        "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Detroit_People_Mover_Route/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"
+        "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Detroit_People_Mover_Route/FeatureServer/0/query?outFields=*&outSR=4326&where=1%3D1&f=geojson"
     });
     map.addSource("mogobikes", {
       type: "geojson",
       data:
-        "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/MoGo_Bike_Share_Locations/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"
+        "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/MoGo_Bike_Share_Locations/FeatureServer/0/query?outFields=*&outSR=4326&where=1%3D1&f=geojson"
     });
     map.addSource("ddotroutes", {
       type: "geojson",
-      data: "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/DDOT_Bus_Routes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"
+      data: "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/DDOT_Bus_Routes/FeatureServer/0/query?outFields=*&outSR=4326&where=1%3D1&f=geojson"
     });
     map.addSource("smartroutes", {
       type: "geojson",
-      data: "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/SMART_Bus_Routes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"
+      data: "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/SMART_Bus_Routes/FeatureServer/0/query?outFields=*&outSR=4326&where=1%3D1&f=geojson"
     });
     map.addSource("qlineroute", {
       type: "geojson",
-      data: "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/QLine_Route/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"
+      data: "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/QLine_Route/FeatureServer/0/query?outFields=*&outSR=4326&where=1%3D1&f=geojson"
     });
     map.addSource("qlinestops", {
       type: "geojson",
-      data: "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/QLine_Stops/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"
+      data: "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/QLine_Stops/FeatureServer/0/query?outFields=*&outSR=4326&where=1%3D1&f=geojson"
     });
     map.addLayer({
       id: "zoning",
@@ -3072,7 +3072,7 @@
       console.log(Object.keys(parcelPointsOwnership));
       for (var field in parcelPointsOwnership) {
         if (parcelPointsOwnership.hasOwnProperty(field)) {
-          if (field == "address") {
+          if (field == "PROPADDR") {
             $(".map-sidebar-header").text(parcelPointsOwnership[field]);
             address = parcelPointsOwnership[field];
             clean_address = parcelPointsOwnership[field];
