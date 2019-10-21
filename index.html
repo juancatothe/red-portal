@@ -3072,27 +3072,27 @@
       console.log(Object.keys(parcelPointsOwnership));
       for (var field in parcelPointsOwnership) {
         if (parcelPointsOwnership.hasOwnProperty(field)) {
-          if (field == "PROPADDR") {
+          if (field == "propaddr") {
             $(".map-sidebar-header").text(parcelPointsOwnership[field]);
             address = parcelPointsOwnership[field];
             clean_address = parcelPointsOwnership[field];
             property_address = parcelPointsOwnership[field];
           }
-          if (field == "RESSYTLE") {
+          if (field == "ressytle") {
             label = "Building Type";
             building_type =
               '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
-          if (field == "COUNCIL") {
+          if (field == "council") {
             label = "Council District";
             council_district =
               '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
-          if (field == "DEPTH") {
+          if (field == "depth") {
             label = "Depth";
             depth = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
-          if (field == "FRONTAGE") {
+          if (field == "frontage") {
             label = "Frontage";
             frontage = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
@@ -3103,7 +3103,7 @@
             parcelPointsOwnership[field] = '<span class="dollar-sign">$</span>' + num.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
             land_value = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
-          if (field == "SALEDATE") {
+          if (field == "saledate") {
             parcelPointsOwnership[field] = new Date(parcelPointsOwnership[field]);
             var d = parcelPointsOwnership[field];
             d = d.toString();
@@ -3114,7 +3114,7 @@
             last_sale_date =
               '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
-          if (field == "SALEPRICE" && parseInt(parcelPointsOwnership[field]) > 0) {
+          if (field == "saleprice" && parseInt(parcelPointsOwnership[field]) > 0) {
             label = "Last Sale Price";
             num = parcelPointsOwnership[field];
             num = parseInt(num);
@@ -3122,46 +3122,46 @@
             last_sale_price =
               '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
-          if (field == "LEGALDESC") {
+          if (field == "legaldesc") {
             label = "Legal Description";
             legaldesc = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
-          if (field == "TAXPAYER1") {
+          if (field == "taxpayer1") {
             label = "Owner";
             owner = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
-          if (field == "TAXPCITY") {
+          if (field == "taxpcity") {
             owner_address = parcelPointsOwnership[field];
           }
-          if (field == "TAXPSTATE") {
+          if (field == "taxpstate") {
             owner_address = owner_address + ", " + parcelPointsOwnership[field];
           }
-          if (field == "TAXPADDR") {
+          if (field == "taxpaddr") {
             owner_address = parcelPointsOwnership[field] + ", " + owner_address;
           }
-          if (field == "TAXPZIP") {
+          if (field == "taxpzip") {
             label = "Owner Address";
             owner_address = owner_address + ", " + parcelPointsOwnership[field];
             parcelPointsOwnership[field] = owner_address;
             owner_address =
               '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
-          if (field == "PARCELNO") {
+          if (field == "parcelno") {
             label = "Parcel Number";
             parcelnum = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
-          if (field == "PRE") {
+          if (field == "pre") {
             label = "Principal Residence Exemption";
             pre = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
-          if (field == "SEV" && parseInt(parcelPointsOwnership[field]) > 0) {
+          if (field == "sev" && parseInt(parcelPointsOwnership[field]) > 0) {
             label = "State Equalized Value";
             num = parcelPointsOwnership[field];
             num = parseInt(num);
             parcelPointsOwnership[field] = '<span class="dollar-sign">$</span>' + num.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
             sev = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
-          if (field == "RESFLAREA") {
+          if (field == "resflarea") {
             label = "Square Footage";
             num = parcelPointsOwnership[field];
             num = num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
@@ -3175,13 +3175,13 @@
               parcelPointsOwnership[field] +
               "<sup>2</sup></p>";
           }
-          if (field == "TAXSTATUS") {
+          if (field == "taxstatus") {
             label = "Taxable Status";
             taxable_status_token = parcelPointsOwnership[field];
             taxable_status =
               '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
-          if (field == "TXV" && parseInt(parcelPointsOwnership[field]) > 0) {
+          if (field == "txv" && parseInt(parcelPointsOwnership[field]) > 0) {
             label = "Taxable Value";
             num = parcelPointsOwnership[field];
             num = parseInt(num);
@@ -3189,20 +3189,20 @@
             taxable_value =
               '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
-          if (field == "TOTALACREAGE") {
+          if (field == "totalacreage") {
             label = "Total Acreage";
             taxable_value =
               '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
-          if (field == "WARD") {
+          if (field == "ward") {
             label = "Ward";
             ward = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
-          if (field == "RESYRBUILT" && parseInt(parcelPointsOwnership[field]) > 0) {
+          if (field == "resyrbuilt" && parseInt(parcelPointsOwnership[field]) > 0) {
             label = "Year Built";
             year_built = '<p data-field="' + field + '"><span class="field-label">' + label.toUpperCase() + ":</span> " + parcelPointsOwnership[field] + "</p>";
           }
-          if (field == "ZIPCODE") {
+          if (field == "zipcode") {
             label = "Property Address";
             property_address =
               '<p data-field="property_address"><span class="field-label">' +
