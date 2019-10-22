@@ -1,967 +1,1102 @@
 <script src="https://detroitmi.gov/core/assets/vendor/jquery/jquery.min.js?v=3.2.1"></script>
-<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700,900" rel="stylesheet" />
-<script src="https://api.mapbox.com/mapbox-gl-js/v0.42.0/mapbox-gl.js"></script>
-<script src="https://npmcdn.com/@turf/turf/turf.min.js"></script>
-<link href="https://api.mapbox.com/mapbox-gl-js/v0.42.0/mapbox-gl.css" rel="stylesheet" />
-<script src="https://npmcdn.com/@turf/turf/turf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/terraformer/1.0.8/terraformer.min.js"></script>
-<script src="https://unpkg.com/terraformer-wkt-parser@1.1.2/terraformer-wkt-parser.js"></script>
-<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.min.js"></script>
-<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.css" type="text/css" />
+<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700,900" rel="stylesheet">
+<script src='https://api.mapbox.com/mapbox-gl-js/v0.42.0/mapbox-gl.js'></script>
+<script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v0.42.0/mapbox-gl.css' rel='stylesheet' />
+<script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/terraformer/1.0.8/terraformer.min.js'></script>
+<script src='https://unpkg.com/terraformer-wkt-parser@1.1.2/terraformer-wkt-parser.js'></script>
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.min.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.css' type='text/css' />
 <style>
-  @import url("https://fonts.googleapis.com/css?family=Montserrat:300,700,900");
-  body {
-    font-family: "Montserrat";
-  }
-  .red-portal .title-icon img {
-    width: 4em;
-    margin-right: 1em;
-    margin-top: -1em;
-  }
-  .red-portal .subtitle-icon img {
-    width: 3em;
-    margin-right: 1em;
-    display: inline-block;
-    vertical-align: text-bottom;
-  }
-  .red-portal .subcontent h5 {
-    margin-top: 1em;
-  }
-  .red-portal h3 {
-    margin-bottom: 0.7em;
-    line-height: 1em;
-  }
-  .red-portal ::selection {
-    background: #feb70d;
-  }
-  .red-portal a {
-    text-decoration: none;
-    font-weight: 600;
-  }
-  #map {
-    height: 73.25vh;
-    grid-area: map;
-  }
-  #filters-toggle {
-    position: absolute;
-    z-index: 105;
-    margin: 0.8em;
-    padding: 0.85em;
-    font-size: 12px;
-    font-family: "Montserrat";
-    background: #279989;
-    border: 2px solid #18252a;
-    color: white;
-    font-weight: 600;
-  }
-  #filters-toggle:hover {
-    background: #003b49;
-  }
-  .mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
-    border: 2px solid #18252a;
-    font-family: "Montserrat";
-    box-shadow: none;
-    border-radius: 0px;
-    font-weight: 600;
-  }
-  .mapboxgl-ctrl-geocoder input:focus {
-    color: #424e54;
-  }
-  #map-filters {
-    display: none;
-    position: absolute;
-    background: rgba(255, 255, 255, 0.8);
-    z-index: 100;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    height: 70vh;
-    bottom: 0px;
-    left: 0px;
-    padding: 6em 2em;
-    width: 100%;
-  }
-  #map-filters .category {
-    font-size: 1.4em !important;
-    text-decoration: underline;
-  }
-  #map-filters .subcategory {
-    margin: 1em;
-  }
-  #map-filters .subcategory,
-  #map-filters .zoning-subcategory {
-    display: inline-block;
-    vertical-align: top;
-  }
-  #map-filters .zoning-subcategory {
-    margin-left: 3.75em;
-  }
-  #map-filters label {
-    font-size: 1.25em;
-    font-family: "Montserrat", sans-serif;
-    font-weight: 600;
-  }
-  #map-filters > ul {
-    margin-top: 20px;
-  }
-  #map-sidebar {
-    height: 70vh;
-    background: white;
-    float: right;
-    overflow-y: scroll;
-    padding: 1em;
-    grid-area: info;
-  }
-  .disclaimer {
-    font-weight: 700;
-  }
-  #map-sidebar-info,
-  #glossary {
-    padding: 1em 0em;
-  }
-  #map-sidebar-info hr {
-    margin: 0.5em auto;
-  }
-  #map-sidebar-info h5 {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    margin: 1em auto 0.25em auto;
-    font-weight: 700;
-  }
-  #map-sidebar-info h5:before {
-    border-top: 2px solid #003b49;
-    content: "";
-    margin: 0 auto;
-    /* this centers the line to the full width specified */
-    position: absolute;
-    /* positioning must be absolute here, and relative positioning must be applied to the parent */
-    top: 10px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 95%;
-    z-index: -1;
-  }
-  #map-sidebar-info h5 span {
-    /* to hide the lines from behind the text, you have to set the background color the same as the container */
-    background: #fff;
-    padding: 0 5px;
-  }
-  #map-sidebar-info p {
-    font-size: 0.9em;
-    line-height: 1.2em;
-    margin-bottom: 0.35em;
-  }
-  #map-sidebar-info p.mc-business {
-    text-transform: uppercase;
-    font-weight: 700;
-    font-size: 0.96em;
-  }
-  #map-sidebar-info p.mc-business-address {
-    font-size: 0.75em;
-    margin-top: -5px;
-    margin-bottom: 10px;
-  }
-  a.mc-business-link {
-    font-weight: 700;
-  }
-  #glossary {
-    display: none;
-  }
-  #glossary p.public-assets-header {
-    font-weight: bold;
-    text-decoration: underline;
-  }
-  #public-ownership-count > span,
-  #development-count > span,
-  #retail-count > span {
-    text-decoration: underline;
-  }
-  #public-ownership-count p,
-  #development-count p,
-  #retail-count p {
-    margin-left: 1em;
-  }
-  #planning-label,
-  #public-transportation-label,
-  #zoning-label {
-    margin: 2em 0.5rem;
-  }
-  #zoning-label {
-    width: 90%;
-    position: relative;
-  }
-  #development-label {
-    margin: 2em 0em 0em 0.5rem;
-  }
-  #public-transportation-list,
-  #planning-area-list {
-    margin-left: 3.75em;
-  }
-  #tab-buttons {
-    background: rgb(214, 214, 214);
-    margin: -1em -1em 0em -1em;
-    padding: 0.8em 0em;
-  }
-  .tab-button {
-    padding: 0.3em;
-    cursor: pointer;
-    font-weight: 900;
-    letter-spacing: 3px;
-  }
-  .tab-button.active {
-    cursor: default;
-    background: white;
-    padding: 1.1em;
-  }
-  #map-sidebar-info p.project-description {
-    font-size: 0.85em;
-  }
-  #map-sidebar-info p.occupancy {
-    margin: 1em 0;
-  }
-  #map-sidebar-info span.occupancy-status-color {
-    width: 15px;
-    height: 15px;
-    display: inline-block;
-    border-radius: 50%;
-    vertical-align: text-bottom;
-  }
-  #map-sidebar-info span.occupancy-status {
-    display: inline-block;
-    margin-left: 0.5em;
-  }
-  #map-sidebar-info p.occupancy svg {
-    width: 20px;
-    vertical-align: middle;
-    margin-left: 3px;
-  }
-  #map-container {
-    display: grid;
-    grid-template-columns: 2fr 8fr 2fr;
-    grid-template-areas: "legend map info";
-  }
-  #map-container > div {
-    display: inline-block;
-  }
-  .frame {
-    max-height: 250px;
-    overflow: hidden;
-  }
-  .frame.project-image {
-    margin: 1em 0;
-  }
-  .frame img {
-    position: relative;
-    margin-top: -10%;
-    width: 100%;
-  }
-  .frame.project-image img {
-    position: relative;
-    width: 100%;
-  }
-  span.field-label {
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-  .property-app-link {
-    background: #279989;
-    width: 100%;
-    padding: 0.5em;
-    text-align: center;
-    display: inline-block;
-    border: 2px solid #424e54;
-    margin-bottom: 1em;
-  }
-  a.property-app-link {
-    color: white;
-    font-weight: 600;
-    min-width: 215px;
-  }
-  .property-app-link:hover {
-    background: #003b49 /*#424e54*/;
-    color: #fefefe;
-  }
-  #loadscreen {
-    position: relative;
-    top: 50%;
-    display: none;
-  }
-  #loadscreen > p {
-    position: relative;
-    top: 52%;
-    text-align: center;
-  }
-  .loading {
-    -moz-animation: loading 8s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-    -webkit-animation: loading 8s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-    animation: loading 8s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-  }
-  .loading,
-  .loading:before,
-  .loading:after {
-    background: #cb0e12;
-    box-sizing: border-box;
-    display: block;
-    font: 0/0 a;
-    height: 40px;
-    left: 50%;
-    margin: -20px 0 0 -5px;
-    position: relative;
-    top: 50%;
-    width: 8px;
-  }
-  .loading:before,
-  .loading:after {
-    content: "";
-    display: block;
-    position: absolute;
-    -webkit-transform: rotate(0deg);
-    left: -10px;
-  }
-  .loading:after {
-    left: auto;
-    right: -15px;
-  }
-
-  @-moz-keyframes 'loading' {
-    0% {
-      -moz-transform: rotate(0deg);
+    @import url('https://fonts.googleapis.com/css?family=Montserrat:300,700,900');
+    body {
+        font-family: 'Montserrat';
     }
-    7.5% {
-      -moz-transform: rotate(0deg);
+    
+    .red-portal .title-icon img {
+        width: 4em;
+        margin-right: 1em;
+        margin-top: -1em;
     }
-    12.5% {
-      -moz-transform: rotate(90deg);
+    
+    .red-portal .subtitle-icon img {
+        width: 3em;
+        margin-right: 1em;
+        display: inline-block;
+        vertical-align: text-bottom;
     }
-    20% {
-      -moz-transform: rotate(90deg);
+    
+    .red-portal .subcontent h5 {
+        margin-top: 1em;
     }
-    25% {
-      -moz-transform: rotate(180deg);
+    
+    .red-portal h3 {
+        margin-bottom: 0.7em;
+        line-height: 1em;
     }
-    32.5% {
-      -moz-transform: rotate(180deg);
+    
+    .red-portal::selection {
+        background: #feb70d;
     }
-    37.5% {
-      -moz-transform: rotate(270deg);
+    
+    .red-portal a {
+        text-decoration: none;
+        font-weight: 600;
     }
-    45% {
-      -moz-transform: rotate(270deg);
+    
+    #map {
+        height: 73.25vh;
+        grid-area: map;
     }
-    50% {
-      -moz-transform: rotate(180deg);
+    
+    #filters-toggle {
+        position: absolute;
+        z-index: 105;
+        margin: 0.8em;
+        padding: 0.85em;
+        font-size: 12px;
+        font-family: 'Montserrat';
+        background: #279989;
+        border: 2px solid #18252a;
+        color: white;
+        font-weight: 600;
     }
-    57.5% {
-      -moz-transform: rotate(180deg);
+    
+    #filters-toggle:hover {
+        background: #003B49;
     }
-    62.5% {
-      -moz-transform: rotate(270deg);
+    
+    .mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
+        border: 2px solid #18252a;
+        font-family: 'Montserrat';
+        box-shadow: none;
+        border-radius: 0px;
+        font-weight: 600;
     }
-    70% {
-      -moz-transform: rotate(270deg);
+    
+    .mapboxgl-ctrl-geocoder input:focus {
+        color: #424e54;
     }
-    75% {
-      -moz-transform: rotate(360deg);
+    
+    #map-filters {
+        display: none;
+        position: absolute;
+        background: rgba(255, 255, 255, 0.8);
+        z-index: 100;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        height: 73.5vh;
+        bottom: 0px;
+        left: 0px;
+        padding: 6em 2em;
+        width: 100%;
     }
-    82.5% {
-      -moz-transform: rotate(360deg);
+    
+    #map-filters .category {
+        font-size: 1.4em !important;
+        text-decoration: underline;
     }
-    87.5% {
-      -moz-transform: rotate(270deg);
+    
+    #map-filters .subcategory {
+        margin: 1em;
     }
-    95% {
-      -moz-transform: rotate(270deg);
+    
+    #map-filters .subcategory,
+    #map-filters .zoning-subcategory {
+        display: inline-block;
+        vertical-align: top;
     }
-    100% {
-      -moz-transform: rotate(360deg);
+    
+    #map-filters .zoning-subcategory {
+        margin-left: 3.75em;
     }
-  }
-  @-webkit-keyframes 'loading' {
-    0% {
-      -webkit-transform: rotate(0deg);
+    
+    #map-filters label {
+        font-size: 1.25em;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
     }
-    7.5% {
-      -webkit-transform: rotate(0deg);
+    
+    #map-filters>ul {
+        margin-top: 20px;
     }
-    12.5% {
-      -webkit-transform: rotate(90deg);
+    
+    #map-sidebar {
+        height: 70vh;
+        background: white;
+        float: right;
+        overflow-y: scroll;
+        padding: 1em;
+        grid-area: info;
     }
-    20% {
-      -webkit-transform: rotate(90deg);
+    
+    .disclaimer {
+        font-weight: 700;
     }
-    25% {
-      -webkit-transform: rotate(180deg);
+    
+    #map-sidebar-info,
+    #glossary {
+        padding: 1em 0em;
     }
-    32.5% {
-      -webkit-transform: rotate(180deg);
+    
+    #map-sidebar-info hr {
+        margin: 0.5em auto;
     }
-    37.5% {
-      -webkit-transform: rotate(270deg);
+    
+    #map-sidebar-info h5 {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        margin: 1em auto 0.25em auto;
+        font-weight: 700;
     }
-    45% {
-      -webkit-transform: rotate(270deg);
+    
+    #map-sidebar-info h5:before {
+        border-top: 2px solid #003B49;
+        content: "";
+        margin: 0 auto;
+        /* this centers the line to the full width specified */
+        position: absolute;
+        /* positioning must be absolute here, and relative positioning must be applied to the parent */
+        top: 10px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 95%;
+        z-index: -1;
     }
-    50% {
-      -webkit-transform: rotate(180deg);
+    
+    #map-sidebar-info h5 span {
+        /* to hide the lines from behind the text, you have to set the background color the same as the container */
+        background: #fff;
+        padding: 0 5px;
     }
-    57.5% {
-      -webkit-transform: rotate(180deg);
+    
+    #map-sidebar-info p {
+        font-size: 0.9em;
+        line-height: 1.2em;
+        margin-bottom: 0.35em;
     }
-    62.5% {
-      -webkit-transform: rotate(270deg);
+    
+    #map-sidebar-info p.mc-business {
+        text-transform: uppercase;
+        font-weight: 700;
+        font-size: 0.96em;
     }
-    70% {
-      -webkit-transform: rotate(270deg);
+    
+    #map-sidebar-info p.mc-business-address {
+        font-size: 0.75em;
+        margin-top: -5px;
+        margin-bottom: 10px;
     }
-    75% {
-      -webkit-transform: rotate(360deg);
+    
+    a.mc-business-link {
+        font-weight: 700;
     }
-    82.5% {
-      -webkit-transform: rotate(360deg);
+    
+    #glossary {
+        display: none;
     }
-    87.5% {
-      -webkit-transform: rotate(270deg);
+    
+    #glossary p.public-assets-header {
+        font-weight: bold;
+        text-decoration: underline;
     }
-    95% {
-      -webkit-transform: rotate(270deg);
+    
+    #public-ownership-count>span,
+    #development-count>span,
+    #retail-count>span {
+        text-decoration: underline;
     }
-    100% {
-      -webkit-transform: rotate(360deg);
+    
+    #public-ownership-count p,
+    #development-count p,
+    #retail-count p {
+        margin-left: 1em;
     }
-  }
-  @keyframes 'loading' {
-    0% {
-      transform: rotate(0deg);
+    
+    #planning-label,
+    #public-transportation-label,
+    #zoning-label {
+        margin: 2em 0.5rem;
     }
-    7.5% {
-      transform: rotate(0deg);
+    
+    #zoning-label {
+        width: 90%;
+        position: relative;
     }
-    12.5% {
-      transform: rotate(90deg);
+    
+    #development-label {
+        margin: 2em 0em 0em 0.5rem;
     }
-    20% {
-      transform: rotate(90deg);
+    
+    #public-transportation-list,
+    #planning-area-list {
+        margin-left: 3.75em;
     }
-    25% {
-      transform: rotate(180deg);
+    
+    #tab-buttons {
+        background: rgb(214, 214, 214);
+        margin: -1em -1em 0em -1em;
+        padding: 0.8em 0em;
     }
-    32.5% {
-      transform: rotate(180deg);
+    
+    .tab-button {
+        padding: 0.3em;
+        cursor: pointer;
+        font-weight: 900;
+        letter-spacing: 3px;
     }
-    37.5% {
-      transform: rotate(270deg);
+    
+    .tab-button.active {
+        cursor: default;
+        background: white;
+        padding: 1.1em;
     }
-    45% {
-      transform: rotate(270deg);
+    
+    #map-sidebar-info p.project-description {
+        font-size: 0.85em;
     }
-    50% {
-      transform: rotate(180deg);
+    
+    #map-sidebar-info p.occupancy {
+        margin: 1em 0;
     }
-    57.5% {
-      transform: rotate(180deg);
+    
+    #map-sidebar-info span.occupancy-status-color {
+        width: 15px;
+        height: 15px;
+        display: inline-block;
+        border-radius: 50%;
+        vertical-align: text-bottom;
     }
-    62.5% {
-      transform: rotate(270deg);
+    
+    #map-sidebar-info span.occupancy-status {
+        display: inline-block;
+        margin-left: 0.5em;
     }
-    70% {
-      transform: rotate(270deg);
+    
+    #map-sidebar-info p.occupancy svg {
+        width: 20px;
+        vertical-align: middle;
+        margin-left: 3px;
     }
-    75% {
-      transform: rotate(360deg);
+    
+    #map-container {
+        display: grid;
+        grid-template-columns: 2fr 8fr 2fr;
+        grid-template-areas: "legend map info";
     }
-    82.5% {
-      transform: rotate(360deg);
+    
+    #map-container>div {
+        display: inline-block;
     }
-    87.5% {
-      transform: rotate(270deg);
+    
+    .frame {
+        max-height: 250px;
+        overflow: hidden;
     }
-    95% {
-      transform: rotate(270deg);
+    
+    .frame.project-image {
+        margin: 1em 0;
     }
-    100% {
-      transform: rotate(360deg);
+    
+    .frame img {
+        position: relative;
+        margin-top: -10%;
+        width: 100%;
     }
-  }
-
-  #map-filters ul {
-    list-style: none;
-    padding: 0;
-  }
-  #map-filters ul .inner {
-    padding-left: 1em;
-    overflow: hidden;
-    display: none;
-  }
-  #map-filters ul .inner.show {
-    /*display: block;*/
-  }
-  #map-filters ul li {
-    margin: -5px;
-  }
-  #map-filters ul li a.toggle {
-    width: 100%;
-    display: block;
-    background: rgba(0, 0, 0, 0.78);
-    color: #fefefe;
-    padding: 0.75em;
-    border-radius: 0.15em;
-    transition: background 0.3s ease;
-  }
-  #map-filters ul li a.toggle:hover {
-    background: rgba(0, 0, 0, 0.9);
-  }
-  /*--Legend Styles--*/
-  #legend {
-    background: rgb(250, 250, 250);
-    padding: 1em;
-    height: 70vh;
-    overflow-y: scroll;
-    float: left;
-    grid-area: legend;
-  }
-  #legend > div {
-    margin-left: 1em;
-  }
-  #legend ul {
-    margin-left: 0em;
-  }
-  #legend ul li {
-    display: inline-block;
-    list-style-type: none;
-    margin: auto 1em;
-  }
-  #legend span {
-    width: 0.75em;
-    height: 0.75em;
-    display: inline-block;
-    margin-right: 0.5em;
-  }
-  #legend span.circle {
-    border-radius: 50%;
-  }
-  #legend span.square {
-    width: 1em;
-  }
-  #legend span.line {
-    width: 1em;
-    height: 0.1em;
-    vertical-align: middle;
-  }
-  #legend ul.zoning-list-legend {
-    margin-bottom: 0em;
-  }
-  #legend span#B1-legend {
-    border: 3px solid #b16776;
-  }
-  #legend span#B2-legend {
-    border: 3px solid #ca5572;
-  }
-  #legend span#B3-legend {
-    border: 3px solid #e2396f;
-  }
-  #legend span#B4-legend {
-    border: 3px solid #aa0044;
-  }
-  #legend span#B5-legend {
-    border: 3px solid #952347;
-  }
-  #legend span#B6-legend {
-    border: 3px solid #74001e;
-  }
-  #legend span#M1-legend {
-    border: 3px solid #986eac;
-  }
-  #legend span#M2-legend {
-    border: 3px solid #a265c2;
-  }
-  #legend span#M3-legend {
-    border: 3px solid #ab5ad8;
-  }
-  #legend span#M4-legend {
-    border: 3px solid #713891;
-  }
-  #legend span#M5-legend,
-  #legend span#M6-legend {
-    border: 3px solid #792aa6;
-  }
-  #legend span#R1-legend {
-    border: 3px solid #8195ae;
-  }
-  #legend span#R2-legend {
-    border: 3px solid #6097ce;
-  }
-  #legend span#R3-legend {
-    border: 3px solid #009aee;
-  }
-  #legend span#R4-legend {
-    border: 3px solid #006cbb;
-  }
-  #legend span#R5-legend {
-    border: 3px solid #29699d;
-  }
-  #legend span#R6-legend {
-    border: 3px solid #00428a;
-  }
-  #legend span#P1-legend,
-  #legend span#PC-legend,
-  #legend span#PCA-legend,
-  #legend span#PD-legend,
-  #legend span#PR-legend {
-    border: 3px solid #72a553;
-  }
-  #legend span#SD1-legend,
-  #legend span#SD2-legend,
-  #legend span#SD3-legend,
-  #legend span#SD4-legend,
-  #legend span#SD5-legend,
-  #legend span#SD6-legend,
-  #legend span#TM-legend,
-  #legend span#W1-legend {
-    border: 3px solid #c57c3d;
-  }
-  #legend span#open-residential-permits-legend {
-    background: #8195ae;
-  }
-  #legend span#one-million-permits-legend {
-    background: #b16776;
-  }
-  #legend span#over-one-million-permits-legend {
-    background: #ca5572;
-  }
-  #legend span#peoplemover-legend {
-    background: #2c5490;
-  }
-  #legend span#ddot-bus-legend {
-    background: #004736;
-  }
-  #legend span#smart-bus-legend {
-    background: #d70000;
-  }
-  #legend span#mogobikes-legend {
-    background: #ee382a;
-  }
-  #legend span#qline-route-legend {
-    width: 2.3em;
-    margin-right: 0em;
-  }
-  #legend span#qline-circle-legend {
-    background: #d64e34;
-    margin: 0em;
-    vertical-align: middle;
-  }
-  #legend span#qline-line-legend {
-    background: #7fb6ab;
-  }
-  #legend span#motor-city-match-businesses-legend {
-    background: #d26e03;
-  }
-  #legend span#motor-city-restore-legend {
-    background: #004445;
-  }
-  #legend span#city-owned-for-sale-legend {
-    background: #55d5c5;
-  }
-  #legend span#city-owned-legend {
-    background: #279989;
-  }
-  #legend span#parks-legend {
-    background: rgb(119, 202, 119);
-  }
-  #legend span#vacant-multi-legend {
-    background: #f44289;
-    border: 1px solid #a5295b;
-  }
-  #legend span#open-rfp-legend {
-    background: #ff68ff;
-    border: 1px solid #c56bc5;
-  }
-  #legend span#in-construction-rfp-legend {
-    background: #b94dba;
-    border: 1px solid #b81aba;
-  }
-  #legend span#predevelopment-rfp-legend {
-    background: #933c94;
-    border: 1px solid #5f0b60;
-  }
-  #legend span#completed-rfp-legend {
-    background: #643265;
-    border: 1px solid #5f0b60;
-  }
-  #legend span#snf-areas-legend {
-    background: #ffff73;
-    border: 1px solid #e89f18;
-  }
-  #legend span#targeted-multi-family-housing-legend {
-    background: #657d9b;
-    border: 1px solid #324965;
-  }
-  #legend span#planning-areas-legend {
-    background: #b5e15c;
-    border: 1px solid #48ae18;
-  }
-  #legend span#completed-planning-projects-legend {
-    background: #39b54a;
-    border: 1px solid #2e9a3d;
-  }
-  #legend span#streetscape-improvements-legend {
-    background: #333333;
-  }
-  #legend span#dlba-structures-legend {
-    background: #53ade9;
-  }
-  #legend span#dlba-vacant-lots-legend {
-    background: #8cc9f2;
-  }
-  #legend span#dlba-side-lots-legend {
-    background: #81b2d3;
-  }
-  #legend span#dlba-auctions-legend {
-    background: #515166;
-  }
-  #legend span#dlba-rehabbed-and-ready-legend {
-    background: #ff6501;
-  }
-  #legend span#dlba-own-it-now-legend {
-    background: #0000ff;
-  }
+    
+    .frame.project-image img {
+        position: relative;
+        width: 100%;
+    }
+    
+    span.field-label {
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    
+    .property-app-link {
+        background: #279989;
+        width: 100%;
+        padding: 0.5em;
+        text-align: center;
+        display: inline-block;
+        border: 2px solid #424e54;
+        margin-bottom: 1em;
+    }
+    
+    a.property-app-link {
+        color: white;
+        font-weight: 600;
+        min-width: 215px;
+    }
+    
+    .property-app-link:hover {
+        background: #003B49/*#424e54*/
+        ;
+        color: #fefefe;
+    }
+    
+    #loadscreen {
+        position: relative;
+        top: 50%;
+        display: none;
+    }
+    
+    #loadscreen>p {
+        position: relative;
+        top: 52%;
+        text-align: center;
+    }
+    
+    .loading {
+        -moz-animation: loading 8s cubic-bezier(0.680, -0.550, 0.265, 1.550) infinite;
+        -webkit-animation: loading 8s cubic-bezier(0.680, -0.550, 0.265, 1.550) infinite;
+        animation: loading 8s cubic-bezier(0.680, -0.550, 0.265, 1.550) infinite;
+    }
+    
+    .loading,
+    .loading:before,
+    .loading:after {
+        background: #cb0e12;
+        box-sizing: border-box;
+        display: block;
+        font: 0/0 a;
+        height: 40px;
+        left: 50%;
+        margin: -20px 0 0 -5px;
+        position: relative;
+        top: 50%;
+        width: 8px;
+    }
+    
+    .loading:before,
+    .loading:after {
+        content: '';
+        display: block;
+        position: absolute;
+        -webkit-transform: rotate(0deg);
+        left: -10px
+    }
+    
+    .loading:after {
+        left: auto;
+        right: -15px;
+    }
+    
+    @-moz-keyframes 'loading' {
+        0% {
+            -moz-transform: rotate(0deg);
+        }
+        7.5% {
+            -moz-transform: rotate(0deg);
+        }
+        12.5% {
+            -moz-transform: rotate(90deg);
+        }
+        20% {
+            -moz-transform: rotate(90deg);
+        }
+        25% {
+            -moz-transform: rotate(180deg);
+        }
+        32.5% {
+            -moz-transform: rotate(180deg);
+        }
+        37.5% {
+            -moz-transform: rotate(270deg);
+        }
+        45% {
+            -moz-transform: rotate(270deg);
+        }
+        50% {
+            -moz-transform: rotate(180deg);
+        }
+        57.5% {
+            -moz-transform: rotate(180deg);
+        }
+        62.5% {
+            -moz-transform: rotate(270deg);
+        }
+        70% {
+            -moz-transform: rotate(270deg);
+        }
+        75% {
+            -moz-transform: rotate(360deg);
+        }
+        82.5% {
+            -moz-transform: rotate(360deg);
+        }
+        87.5% {
+            -moz-transform: rotate(270deg);
+        }
+        95% {
+            -moz-transform: rotate(270deg);
+        }
+        100% {
+            -moz-transform: rotate(360deg);
+        }
+    }
+    
+    @-webkit-keyframes 'loading' {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+        7.5% {
+            -webkit-transform: rotate(0deg);
+        }
+        12.5% {
+            -webkit-transform: rotate(90deg);
+        }
+        20% {
+            -webkit-transform: rotate(90deg);
+        }
+        25% {
+            -webkit-transform: rotate(180deg);
+        }
+        32.5% {
+            -webkit-transform: rotate(180deg);
+        }
+        37.5% {
+            -webkit-transform: rotate(270deg);
+        }
+        45% {
+            -webkit-transform: rotate(270deg);
+        }
+        50% {
+            -webkit-transform: rotate(180deg);
+        }
+        57.5% {
+            -webkit-transform: rotate(180deg);
+        }
+        62.5% {
+            -webkit-transform: rotate(270deg);
+        }
+        70% {
+            -webkit-transform: rotate(270deg);
+        }
+        75% {
+            -webkit-transform: rotate(360deg);
+        }
+        82.5% {
+            -webkit-transform: rotate(360deg);
+        }
+        87.5% {
+            -webkit-transform: rotate(270deg);
+        }
+        95% {
+            -webkit-transform: rotate(270deg);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+    
+    @keyframes 'loading' {
+        0% {
+            transform: rotate(0deg);
+        }
+        7.5% {
+            transform: rotate(0deg);
+        }
+        12.5% {
+            transform: rotate(90deg);
+        }
+        20% {
+            transform: rotate(90deg);
+        }
+        25% {
+            transform: rotate(180deg);
+        }
+        32.5% {
+            transform: rotate(180deg);
+        }
+        37.5% {
+            transform: rotate(270deg);
+        }
+        45% {
+            transform: rotate(270deg);
+        }
+        50% {
+            transform: rotate(180deg);
+        }
+        57.5% {
+            transform: rotate(180deg);
+        }
+        62.5% {
+            transform: rotate(270deg);
+        }
+        70% {
+            transform: rotate(270deg);
+        }
+        75% {
+            transform: rotate(360deg);
+        }
+        82.5% {
+            transform: rotate(360deg);
+        }
+        87.5% {
+            transform: rotate(270deg);
+        }
+        95% {
+            transform: rotate(270deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    
+    #map-filters ul {
+        list-style: none;
+        padding: 0;
+    }
+    
+    #map-filters ul .inner {
+        padding-left: 1em;
+        overflow: hidden;
+        display: none;
+    }
+    
+    #map-filters ul .inner.show {
+        /*display: block;*/
+    }
+    
+    #map-filters ul li {
+        margin: -5px;
+    }
+    
+    #map-filters ul li a.toggle {
+        width: 100%;
+        display: block;
+        background: rgba(0, 0, 0, 0.78);
+        color: #fefefe;
+        padding: .75em;
+        border-radius: 0.15em;
+        transition: background .3s ease;
+    }
+    
+    #map-filters ul li a.toggle:hover {
+        background: rgba(0, 0, 0, 0.9);
+    }
+    /*--Legend Styles--*/
+    
+    #legend {
+        background: rgb(250, 250, 250);
+        padding: 1em;
+        height: 70vh;
+        overflow-y: scroll;
+        float: left;
+        grid-area: legend;
+    }
+    
+    #legend>div {
+        margin-left: 1em;
+    }
+    
+    #legend ul {
+        margin-left: 0em;
+    }
+    
+    #legend ul li {
+        display: inline-block;
+        list-style-type: none;
+        margin: auto 1em;
+    }
+    
+    #legend span {
+        width: 0.75em;
+        height: 0.75em;
+        display: inline-block;
+        margin-right: 0.5em;
+    }
+    
+    #legend span.circle {
+        border-radius: 50%;
+    }
+    
+    #legend span.square {
+        width: 1em;
+    }
+    
+    #legend span.line {
+        width: 1em;
+        height: 0.1em;
+        vertical-align: middle;
+    }
+    
+    #legend ul.zoning-list-legend {
+        margin-bottom: 0em;
+    }
+    
+    #legend span#B1-legend {
+        border: 3px solid #b16776;
+    }
+    
+    #legend span#B2-legend {
+        border: 3px solid #ca5572;
+    }
+    
+    #legend span#B3-legend {
+        border: 3px solid #e2396f;
+    }
+    
+    #legend span#B4-legend {
+        border: 3px solid #aa0044;
+    }
+    
+    #legend span#B5-legend {
+        border: 3px solid #952347;
+    }
+    
+    #legend span#B6-legend {
+        border: 3px solid #74001e;
+    }
+    
+    #legend span#M1-legend {
+        border: 3px solid #986eac;
+    }
+    
+    #legend span#M2-legend {
+        border: 3px solid #a265c2;
+    }
+    
+    #legend span#M3-legend {
+        border: 3px solid #ab5ad8;
+    }
+    
+    #legend span#M4-legend {
+        border: 3px solid #713891;
+    }
+    
+    #legend span#M5-legend,
+    #legend span#M6-legend {
+        border: 3px solid #792aa6;
+    }
+    
+    #legend span#R1-legend {
+        border: 3px solid #8195ae;
+    }
+    
+    #legend span#R2-legend {
+        border: 3px solid #6097ce;
+    }
+    
+    #legend span#R3-legend {
+        border: 3px solid #009aee;
+    }
+    
+    #legend span#R4-legend {
+        border: 3px solid #006cbb;
+    }
+    
+    #legend span#R5-legend {
+        border: 3px solid #29699d;
+    }
+    
+    #legend span#R6-legend {
+        border: 3px solid #00428a;
+    }
+    
+    #legend span#P1-legend,
+    #legend span#PC-legend,
+    #legend span#PCA-legend,
+    #legend span#PD-legend,
+    #legend span#PR-legend {
+        border: 3px solid #72a553;
+    }
+    
+    #legend span#SD1-legend,
+    #legend span#SD2-legend,
+    #legend span#SD3-legend,
+    #legend span#SD4-legend,
+    #legend span#SD5-legend,
+    #legend span#SD6-legend,
+    #legend span#TM-legend,
+    #legend span#W1-legend {
+        border: 3px solid #c57c3d;
+    }
+    
+    #legend span#permits-legend {
+        background: #b16776;
+    }
+    
+    #legend span#one-million-permits-legend {
+        background: #b16776;
+    }
+    
+    #legend span#over-one-million-permits-legend {
+        background: #ca5572;
+    }
+    
+    #legend span#peoplemover-legend {
+        background: #2c5490;
+    }
+    
+    #legend span#ddot-bus-legend {
+        background: #004736;
+    }
+    
+    #legend span#smart-bus-legend {
+        background: #d70000;
+    }
+    
+    #legend span#mogobikes-legend {
+        background: #ee382a;
+    }
+    
+    #legend span#qline-route-legend {
+        width: 2.3em;
+        margin-right: 0em;
+    }
+    
+    #legend span#qline-circle-legend {
+        background: #d64e34;
+        margin: 0em;
+        vertical-align: middle;
+    }
+    
+    #legend span#qline-line-legend {
+        background: #7fb6ab;
+    }
+    
+    #legend span#motor-city-match-businesses-legend {
+        background: #d26e03;
+    }
+    
+    #legend span#motor-city-restore-legend {
+        background: #004445;
+    }
+    
+    #legend span#city-owned-for-sale-legend {
+        background: #55d5c5;
+    }
+    
+    #legend span#city-owned-legend {
+        background: #279989;
+    }
+    
+    #legend span#parks-legend {
+        background: rgb(119, 202, 119);
+    }
+    
+    #legend span#vacant-multi-legend {
+        background: #f44289;
+        border: 1px solid #a5295b;
+    }
+    
+    #legend span#open-rfp-legend {
+        background: #ff68ff;
+        border: 1px solid #c56bc5;
+    }
+    
+    #legend span#in-construction-rfp-legend {
+        background: #b94dba;
+        border: 1px solid #b81aba;
+    }
+    
+    #legend span#predevelopment-rfp-legend {
+        background: #933c94;
+        border: 1px solid #5f0b60;
+    }
+    
+    #legend span#completed-rfp-legend {
+        background: #643265;
+        border: 1px solid #5f0b60;
+    }
+    
+    #legend span#snf-areas-legend {
+        background: #ffff73;
+        border: 1px solid #e89f18;
+    }
+    
+    #legend span#targeted-multi-family-housing-legend {
+        background: #657d9b;
+        border: 1px solid #324965;
+    }
+    
+    #legend span#planning-areas-legend {
+        background: #b5e15c;
+        border: 1px solid #48ae18;
+    }
+    
+    #legend span#opportunity-zones-legend {
+        background: #eb9e34;
+        border: 1px solid #ba7311;
+    }
+    
+    #legend span#completed-planning-projects-legend {
+        background: #39b54a;
+        border: 1px solid #2e9a3d;
+    }
+    
+    #legend span#streetscape-improvements-legend {
+        background: #333333;
+    }
+    
+    #legend span#dlba-structures-legend {
+        background: #53ade9;
+    }
+    
+    #legend span#dlba-vacant-lots-legend {
+        background: #8cc9f2;
+    }
+    
+    #legend span#dlba-side-lots-legend {
+        background: #81b2d3;
+    }
+    
+    #legend span#dlba-auctions-legend {
+        background: #515166;
+    }
+    
+    #legend span#dlba-rehabbed-and-ready-legend {
+        background: #ff6501;
+    }
+    
+    #legend span#dlba-own-it-now-legend {
+        background: #0000ff;
+    }
 </style>
 <main class="red-portal">
-  <br />
-  <br />
-  <div class="description container">
-    <p>Navigate the map below to understand development opportunities across Detroit. Some key layers to explore are:</p>
-    <ul>
-      <li><strong>To purchase city owned property and /or buildings</strong> - select Detroit Land Bank Authority and/or City Owned properties</li>
-      <li><strong>To understand development opportunities</strong>&nbsp;- select Request for Proposals</li>
-      <li><strong>To understand planning areas in Detroit</strong> - Explore Planning and Housing Priority Areas</li>
-      <li>
-        <strong>To understand the retail / commercial landscape in Detroit</strong> - Navigate options under Retail to see where Motor City Match and Motor City
-        Restore award recipients are located
-      </li>
-    </ul>
-    <br />
-  </div>
-  <div id="map-container" style="margin:0 auto">
-    <div id="legend">
-      <h3>MAP LEGEND</h3>
-      <div>
-        <h5 class="legend-category">PUBLIC ASSETS</h5>
-        <ul id="public-assets-legend">
-          <li><span id="city-owned-for-sale-legend" class="circle"></span>City-Owned Properties for Sale</li>
-          <li><span id="city-owned-legend" class="circle"></span>City-Owned Properties</li>
-          <li><span id="parks-legend" class="square"></span>Parks</li>
-          <li><span id="dlba-structures-legend" class="circle"></span>DLBA Structures</li>
-          <li><span id="dlba-vacant-lots-legend" class="circle"></span>DLBA Vacant Lots</li>
-          <li><span id="dlba-side-lots-legend" class="circle"></span>DLBA Side Lots</li>
-          <li><span id="dlba-auctions-legend" class="circle"></span>DLBA Auctions</li>
-          <li><span id="dlba-rehabbed-and-ready-legend" class="circle"></span>DLBA Rehabbed & Ready</li>
-          <li><span id="dlba-own-it-now-legend" class="circle"></span>DLBA Own It Now</li>
-        </ul>
-        <h5 class="legend-category">RETAIL</h5>
-        <ul id="retail-legend">
-          <li><span id="motor-city-match-businesses-legend" class="circle"></span>Motor City Match Awardees</li>
-          <li><span id="motor-city-restore-legend" class="circle"></span>Motor City Re-Store</li>
-        </ul>
-        <h5 class="legend-category">PLANNING AND HOUSING</h5>
-        <ul id="planning-and-housing-legend">
-          <li><span id="targeted-multi-family-housing-legend" class="square"></span>Targeted Multifamily Housing Areas</li>
-          <li><span id="planning-areas-legend" class="square"></span>Planning Areas</li>
-          <li><span id="snf-areas-legend" class="square"></span>Strategic Neighborhood Fund Investment Areas</li>
-          <li><span id="streetscape-improvements-legend" class="line"></span>Streetscape Improvements</li>
-          <li><span id="completed-planning-projects-legend" class="square"></span>Completed Planning Studies</li>
-        </ul>
-        <h5 class="legend-category">DEVELOPMENT</h5>
-        <ul id="development-legend">
-          <li><span id="open-rfp-legend" class="square"></span>Open RFPs</li>
-          <li><span id="predevelopment-rfp-legend" class="square"></span>Pre-Development RFP</li>
-          <li><span id="in-construction-rfp-legend" class="square"></span>In Construction RFP</li>
-          <li><span id="completed-rfp-legend" class="square"></span>Completed RFP</li>
-          <li><span id="vacant-multi-legend" class="square"></span>Vacant Multifamily (In-Progress)</li>
-          <li><span id="open-residential-permits-legend" class="circle"></span>Open Residential Permits</li>
-          <li><span id="one-million-permits-legend" class="circle"></span>Open Commercial ($0-$1M)</li>
-          <li><span id="over-one-million-permits-legend" class="circle"></span>Open Commercial ($1M+)</li>
-        </ul>
-        <h5 class="legend-category">PUBLIC TRANSPORTATION</h5>
-        <ul id="public-transportation-legend">
-          <li><span id="ddot-bus-legend" class="line"></span>DDoT Buses</li>
-          <li><span id="smart-bus-legend" class="line"></span>Smart Bus</li>
-          <li>
-            <span id="qline-route-legend"><span id="qline-circle-legend" class="circle"></span><span id="qline-line-legend" class="line"></span></span>Qline
-          </li>
-          <li><span id="peoplemover-legend" class="line"></span>People Mover</li>
-          <li><span id="mogobikes-legend" class="circle"></span>MoGo Bike Sharing</li>
-        </ul>
-        <h5 class="legend-category">ZONING</h5>
-        <ul class="zoning-list-legend" id="residential-zoning-legend">
-          <li><span id="R1-legend" class="square"></span>R1</li>
-          <li><span id="R2-legend" class="square"></span>R2</li>
-          <li><span id="R3-legend" class="square"></span>R3</li>
-          <li><span id="R4-legend" class="square"></span>R4</li>
-          <li><span id="R5-legend" class="square"></span>R5</li>
-          <li><span id="R6-legend" class="square"></span>R6</li>
-        </ul>
-        <ul class="zoning-list-legend" id="business-zoning-legend">
-          <li><span id="B1-legend" class="square"></span>B1</li>
-          <li><span id="B2-legend" class="square"></span>B2</li>
-          <li><span id="B3-legend" class="square"></span>B3</li>
-          <li><span id="B4-legend" class="square"></span>B4</li>
-          <li><span id="B5-legend" class="square"></span>B5</li>
-          <li><span id="B6-legend" class="square"></span>B6</li>
-        </ul>
-        <ul class="zoning-list-legend" id="industrial-zoning-legend">
-          <li><span id="M1-legend" class="square"></span>M1</li>
-          <li><span id="M2-legend" class="square"></span>M2</li>
-          <li><span id="M3-legend" class="square"></span>M3</li>
-          <li><span id="M4-legend" class="square"></span>M4</li>
-          <li><span id="M5-legend" class="square"></span>M5</li>
-        </ul>
-        <ul class="zoning-list-legend" id="special-districts-zoning-legend">
-          <li><span id="SD1-legend" class="square"></span>SD1</li>
-          <li><span id="SD2-legend" class="square"></span>SD1</li>
-          <li><span id="SD3-legend" class="square"></span>SD3</li>
-          <li><span id="SD4-legend" class="square"></span>SD4</li>
-          <li><span id="SD5-legend" class="square"></span>SD5</li>
-          <li><span id="SD6-legend" class="square"></span>SD6</li>
-        </ul>
-        <ul class="zoning-list-legend" id="other-special-districts-zoning-legend">
-          <li><span id="PD-legend" class="square"></span>PD</li>
-          <li><span id="P1-legend" class="square"></span>P1</li>
-          <li><span id="PC-legend" class="square"></span>PC</li>
-          <li><span id="PCA-legend" class="square"></span>PCA</li>
-          <li><span id="TM-legend" class="square"></span>TM</li>
-          <li><span id="PR-legend" class="square"></span>PR</li>
-          <li><span id="W1-legend" class="square"></span>W1</li>
-        </ul>
-      </div>
-    </div>
-    <div id="map" class="mapboxgl-map">
-      <a id="filters-toggle" href="#">Show/Hide Data Layers</a>
-      <!-- Start Paste Here -->
-      <div id="map-filters">
+    <br>
+    <br>
+    <div class="description container">
+        <p>Navigate the map below to understand development opportunities across Detroit. Some key layers to explore are:
+        </p>
         <ul>
-          <li>
-            <input id="public-assets" name="public-assets" type="checkbox" />
-            <label for="public-assets" class="category" id="public-assets-label">Public Assets</label>
-            <ul>
-              <li class="subcategory">
-                <input class="public-assets-checkbox public-assets-header" id="city-owned-properties" name="city-owned-properties" type="checkbox" />
-                <label for="city-owned-properties">City-Owned Parcels</label>
-                <ul>
-                  <li>
-                    <input class="public-assets-checkbox" id="marketed-properties" name="marketed-properties" type="checkbox" />
-                    <label for="marketed-properties">City-Owned Properties for Sale</label>
-                  </li>
-                  <li>
-                    <input class="public-assets-checkbox" id="tax-status-city-owned-properties" name="tax-status-city-owned-properties" type="checkbox" />
-                    <label for="tax-status-city-owned-properties">City-Owned Properties</label>
-                  </li>
-                  <li>
-                    <input class="public-assets-checkbox" id="parksgeojson" name="parksgeojson" type="checkbox" />
-                    <label for="parksgeojson">Parks</label>
-                  </li>
+            <li><strong>To purchase city owned property and /or buildings</strong> - select Detroit Land Bank Authority and/or City Owned properties</li>
+            <li><strong>To understand development opportunities</strong>&nbsp;- select Request for Proposals</li>
+            <li><strong>To understand planning areas in Detroit</strong> - Explore Planning and Housing Priority Areas</li>
+            <li><strong>To understand the retail / commercial landscape in Detroit</strong> - Navigate options under Retail to see where Motor City Match and Motor City Restore award recipients are located</li>
+        </ul>
+        <br>
+    </div>
+    <div id="map-container" style="margin:0 auto">
+        <div id="legend">
+            <h3>MAP LEGEND</h3>
+            <div>
+                <h5 class="legend-category">PUBLIC ASSETS</h5>
+                <ul id="public-assets-legend">
+                    <!--li><span id="city-owned-for-sale-legend" class="circle"></span>City-Owned Properties for Sale</li-->
+                    <!--li><span id="city-owned-legend" class="circle"></span>City-Owned Properties</li-->
+                    <li><span id="parks-legend" class="square"></span>Parks</li>
+                    <li><span id="dlba-structures-legend" class="circle"></span>DLBA Structures</li>
+                    <li><span id="dlba-vacant-lots-legend" class="circle"></span>DLBA Vacant Lots</li>
+                    <li><span id="dlba-side-lots-legend" class="circle"></span>DLBA Side Lots</li>
+                    <li><span id="dlba-auctions-legend" class="circle"></span>DLBA Auctions</li>
+                    <li><span id="dlba-rehabbed-and-ready-legend" class="circle"></span>DLBA Rehabbed & Ready</li>
+                    <li><span id="dlba-own-it-now-legend" class="circle"></span>DLBA Own It Now</li>
                 </ul>
-              </li>
-              <li class="subcategory">
-                <input class="public-assets-checkbox dlba-inventory-checkbox public-assets-header" id="dlba-inventory" name="dlba-inventory" type="checkbox" />
-                <label for="dlba-inventory">Detroit Land Bank Authority</label>
-                <ul>
-                  <li>
-                    <input class="dlba-inventory-checkbox" id="dlba-structures" name="dlba-structures" type="checkbox" />
-                    <label for="dlba-structures">Structures</label>
-                  </li>
-                  <li>
-                    <input class="dlba-inventory-checkbox" id="dlba-vacant-lots" name="dlba-vacant-lots" type="checkbox" />
-                    <label for="dlba-vacant-lots">Vacant Lots</label>
-                  </li>
-                  <li>
-                    <input class="dlba-inventory-checkbox" id="dlba-side-lots" name="dlba-side-lots" type="checkbox" />
-                    <label for="dlba-side-lots">Side Lots</label>
-                  </li>
-                  <li>
-                    <input class="dlba-inventory-checkbox" id="dlba-auctions" name="dlba-auctions" type="checkbox" />
-                    <label for="dlba-auctions">Auctions</label>
-                  </li>
-                  <li>
-                    <input class="dlba-inventory-checkbox" id="dlba-rehabbed-and-ready" name="dlba-rehabbed-and-ready" type="checkbox" />
-                    <label for="dlba-rehabbed-and-ready">Rehabbed & Ready</label>
-                  </li>
-                  <li>
-                    <input class="dlba-inventory-checkbox" id="dlba-own-it-now" name="dlba-own-it-now" type="checkbox" />
-                    <label for="dlba-own-it-now">Own It Now</label>
-                  </li>
+                <h5 class="legend-category">RETAIL</h5>
+                <ul id="retail-legend">
+                    <li><span id="motor-city-match-businesses-legend" class="circle"></span>Motor City Match Awardees</li>
+                    <li><span id="motor-city-restore-legend" class="circle"></span>Motor City Re-Store</li>
                 </ul>
-              </li>
-            </ul>
-          </li>
-          <li>
-            <input id="retail" name="retail" type="checkbox" />
-            <label for="retail" class="category" id="retail-label">Retail</label>
-            <ul>
-              <li class="subcategory">
-                <input class="retail-checkbox retail-header" id="mcm-business" name="mcm-business" type="checkbox" />
-                <label for="mcm-business">Motor City Match Awardees</label>
-              </li>
-              <li class="subcategory">
-                <input class="permits-header" id="mc-restore" name="mc-restore" type="checkbox" />
-                <label for="mc-restore">Motor City Re-Store</label>
-              </li>
-            </ul>
-          </li>
-          <li>
-            <input id="planning-and-housing-priority-areas" name="planning-and-housing-priority-areas" type="checkbox" />
-            <label for="planning-and-housing-priority-areas" class="category" id="planning-label">Planning & Housing </label>
-            <ul id="planning-area-list">
-              <li>
-                <input class="planning-checkbox" id="targeted-multi-family-housing" name="targeted-multi-family-housing" type="checkbox" />
-                <label for="targeted-multi-family-housing">Targeted Multifamily Housing Areas</label>
-              </li>
-              <li>
-                <input class="planning-checkbox" id="planning-areas" name="planning-areas" type="checkbox" />
-                <label for="planning-areas">Planning Areas</label>
-              </li>
-              <!--li>
+                <h5 class="legend-category">PLANNING AND HOUSING</h5>
+                <ul id="planning-and-housing-legend">
+                    <li><span id="opportunity-zones-legend" class="square"></span>Opportunity Zones</li>
+                    <li><span id="targeted-multi-family-housing-legend" class="square"></span>Targeted Multifamily Housing Areas</li>
+                    <li><span id="planning-areas-legend" class="square"></span>Planning Areas</li>
+                    <li><span id="snf-areas-legend" class="square"></span>Strategic Neighborhood Fund Investment Areas</li>
+                    <li><span id="streetscape-improvements-legend" class="line"></span>Streetscape Improvements</li>
+                    <li><span id="completed-planning-projects-legend" class="square"></span>Completed Planning Studies</li>
+                </ul>
+                <h5 class="legend-category">DEVELOPMENT</h5>
+                <ul id="development-legend">
+                    <li><span id="open-rfp-legend" class="square"></span>Open RFPs</li>
+                    <li><span id="predevelopment-rfp-legend" class="square"></span>Pre-Development RFP</li>
+                    <li><span id="in-construction-rfp-legend" class="square"></span>In Construction RFP</li>
+                    <li><span id="completed-rfp-legend" class="square"></span>Completed RFP</li>
+                    <li><span id="vacant-multi-legend" class="square"></span>Vacant Multifamily (In-Progress)</li>
+                    <!--li><span id="open-residential-permits-legend" class="circle"></span>Open Residential Permits</li>
+        <li><span id="one-million-permits-legend" class="circle"></span>Open Commercial ($0-$1M)</li>
+        <li><span id="over-one-million-permits-legend" class="circle"></span>Open Commercial ($1M+)</li-->
+                    <!--li><span id="permits-legend" class="circle"></span>Building Permits ($500K-$1M)</li-->
+                </ul>
+                <h5 class="legend-category">PUBLIC TRANSPORTATION</h5>
+                <ul id="public-transportation-legend">
+                    <!--li><span id="ddot-bus-legend" class="line"></span>DDoT Buses</li-->
+                    <li><span id="smart-bus-legend" class="line"></span>Smart Bus</li>
+                    <li><span id="qline-route-legend"><span id="qline-circle-legend" class="circle"></span><span id="qline-line-legend" class="line"></span></span>Qline</li>
+                    <li><span id="peoplemover-legend" class="line"></span>People Mover</li>
+                    <li><span id="mogobikes-legend" class="circle"></span>MoGo Bike Sharing</li>
+                </ul>
+                <h5 class="legend-category">ZONING</h5>
+                <ul class="zoning-list-legend" id="residential-zoning-legend">
+                    <li><span id="R1-legend" class="square"></span>R1</li>
+                    <li><span id="R2-legend" class="square"></span>R2</li>
+                    <li><span id="R3-legend" class="square"></span>R3</li>
+                    <li><span id="R4-legend" class="square"></span>R4</li>
+                    <li><span id="R5-legend" class="square"></span>R5</li>
+                    <li><span id="R6-legend" class="square"></span>R6</li>
+                </ul>
+                <ul class="zoning-list-legend" id="business-zoning-legend">
+                    <li><span id="B1-legend" class="square"></span>B1</li>
+                    <li><span id="B2-legend" class="square"></span>B2</li>
+                    <li><span id="B3-legend" class="square"></span>B3</li>
+                    <li><span id="B4-legend" class="square"></span>B4</li>
+                    <li><span id="B5-legend" class="square"></span>B5</li>
+                    <li><span id="B6-legend" class="square"></span>B6</li>
+                </ul>
+                <ul class="zoning-list-legend" id="industrial-zoning-legend">
+                    <li><span id="M1-legend" class="square"></span>M1</li>
+                    <li><span id="M2-legend" class="square"></span>M2</li>
+                    <li><span id="M3-legend" class="square"></span>M3</li>
+                    <li><span id="M4-legend" class="square"></span>M4</li>
+                    <li><span id="M5-legend" class="square"></span>M5</li>
+                </ul>
+                <ul class="zoning-list-legend" id="special-districts-zoning-legend">
+                    <li><span id="SD1-legend" class="square"></span>SD1</li>
+                    <li><span id="SD2-legend" class="square"></span>SD1</li>
+                    <li><span id="SD3-legend" class="square"></span>SD3</li>
+                    <li><span id="SD4-legend" class="square"></span>SD4</li>
+                    <li><span id="SD5-legend" class="square"></span>SD5</li>
+                    <li><span id="SD6-legend" class="square"></span>SD6</li>
+                </ul>
+                <ul class="zoning-list-legend" id="other-special-districts-zoning-legend">
+                    <li><span id="PD-legend" class="square"></span>PD</li>
+                    <li><span id="P1-legend" class="square"></span>P1</li>
+                    <li><span id="PC-legend" class="square"></span>PC</li>
+                    <li><span id="PCA-legend" class="square"></span>PCA</li>
+                    <li><span id="TM-legend" class="square"></span>TM</li>
+                    <li><span id="PR-legend" class="square"></span>PR</li>
+                    <li><span id="W1-legend" class="square"></span>W1</li>
+                </ul>
+            </div>
+        </div>
+        <div id="map" class="mapboxgl-map">
+            <a id="filters-toggle" href="#">Show/Hide Data Layers</a>
+            <!-- Start Paste Here -->
+            <div id="map-filters">
+                <ul>
+                    <li>
+                        <input id="public-assets" name="public-assets" type="checkbox">
+                        <label for="public-assets" class="category" id="public-assets-label">Public Assets</label>
+                        <ul>
+                            <li class="subcategory">
+                                <input class="public-assets-checkbox public-assets-header" id="city-owned-properties" name="city-owned-properties" type="checkbox">
+                                <label for="city-owned-properties">City-Owned Parcels</label>
+                                <ul>
+                                    <!--li>
+            <input class="public-assets-checkbox" id="marketed-properties" name="marketed-properties" type="checkbox">
+            <label for="marketed-properties">City-Owned Properties for Sale</label>
+            </li>
+            <li>
+            <input class="public-assets-checkbox" id="tax-status-city-owned-properties" name="tax-status-city-owned-properties" type="checkbox">
+            <label for="tax-status-city-owned-properties">City-Owned Properties</label>
+            </li-->
+                                    <li>
+                                        <input class="public-assets-checkbox" id="parksgeojson" name="parksgeojson" type="checkbox">
+                                        <label for="parksgeojson">Parks</label>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="subcategory">
+                                <input class="public-assets-checkbox dlba-inventory-checkbox public-assets-header" id="dlba-inventory" name="dlba-inventory" type="checkbox">
+                                <label for="dlba-inventory">Detroit Land Bank Authority</label>
+                                <ul>
+                                    <li>
+                                        <input class="dlba-inventory-checkbox" id="dlba-structures" name="dlba-structures" type="checkbox">
+                                        <label for="dlba-structures">Structures</label>
+                                    </li>
+                                    <li>
+                                        <input class="dlba-inventory-checkbox" id="dlba-vacant-lots" name="dlba-vacant-lots" type="checkbox">
+                                        <label for="dlba-vacant-lots">Vacant Lots</label>
+                                    </li>
+                                    <li>
+                                        <input class="dlba-inventory-checkbox" id="dlba-side-lots" name="dlba-side-lots" type="checkbox">
+                                        <label for="dlba-side-lots">Side Lots</label>
+                                    </li>
+                                    <li>
+                                        <input class="dlba-inventory-checkbox" id="dlba-auctions" name="dlba-auctions" type="checkbox">
+                                        <label for="dlba-auctions">Auctions</label>
+                                    </li>
+                                    <li>
+                                        <input class="dlba-inventory-checkbox" id="dlba-rehabbed-and-ready" name="dlba-rehabbed-and-ready" type="checkbox">
+                                        <label for="dlba-rehabbed-and-ready">Rehabbed & Ready</label>
+                                    </li>
+                                    <li>
+                                        <input class="dlba-inventory-checkbox" id="dlba-own-it-now" name="dlba-own-it-now" type="checkbox">
+                                        <label for="dlba-own-it-now">Own It Now</label>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <input id="retail" name="retail" type="checkbox">
+                        <label for="retail" class="category" id="retail-label">Retail</label>
+                        <ul>
+                            <li class="subcategory">
+                                <input class="retail-checkbox retail-header" id="mcm-business" name="mcm-business" type="checkbox">
+                                <label for="mcm-business">Motor City Match Awardees</label>
+                            </li>
+                            <li class="subcategory">
+                                <input class="retail-header" id="mc-restore" name="mc-restore" type="checkbox">
+                                <label for="mc-restore">Motor City Re-Store</label>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <input id="planning-and-housing-priority-areas" name="planning-and-housing-priority-areas" type="checkbox">
+                        <label for="planning-and-housing-priority-areas" class="category" id="planning-label">Planning & Housing </label>
+                        <ul id="planning-area-list">
+                            <li>
+                                <input class="planning-checkbox" id="opportunity-zones" name="opportunity-zones" type="checkbox">
+                                <label for="opportunity-zones">Opportunity Zones</label>
+                            </li>
+                            <li>
+                                <input class="planning-checkbox" id="targeted-multi-family-housing" name="targeted-multi-family-housing" type="checkbox">
+                                <label for="targeted-multi-family-housing">Targeted Multifamily Housing Areas</label>
+                            </li>
+                            <li>
+                                <input class="planning-checkbox" id="planning-areas" name="planning-areas" type="checkbox">
+                                <label for="planning-areas">Planning Areas</label>
+                            </li>
+                            <!--li>
                                             <input class="planning-checkbox" id="snf-areas" name="snf-areas" type="checkbox">
                                             <label for="snf-areas">Strategic Neighborhood Fund Investment Areas</label>
                                         </li-->
-              <li>
-                <input class="planning-checkbox" id="streetscape-improvements" name="streetscape-improvements" type="checkbox" />
-                <label for="streetscape-improvements">Streetscape Improvements</label>
-              </li>
-              <li>
-                <input class="planning-checkbox" id="completed-planning-projects" name="completed-planning-projects" type="checkbox" />
-                <label for="completed-planning-projects">Completed Planning Studies</label>
-              </li>
-            </ul>
-          </li>
-          <li>
-            <input id="development" name="development" type="checkbox" />
-            <label for="development" class="category" id="development-label">Development</label>
-            <ul>
-              <li class="subcategory">
-                <input class="development-checkbox development-header" id="rfp" name="rfp" type="checkbox" />
-                <label for="rfp">Request for Proposals</label>
-                <ul>
-                  <li>
-                    <input class="development-checkbox" id="open-rfp" name="open-rfp" type="checkbox" />
-                    <label for="open-rfp">Open to Submissions</label>
-                  </li>
-                  <li>
-                    <input class="development-checkbox" id="predevelopment-rfp" name="predevelopment-rfp" type="checkbox" />
-                    <label for="predevelopment-rfp">Pre-Development</label>
-                  </li>
-                  <li>
-                    <input class="development-checkbox" id="in-construction-rfp" name="in-construction-rfp" type="checkbox" />
-                    <label for="in-construction-rfp">In Construction</label>
-                  </li>
-                  <li>
-                    <input class="development-checkbox" id="completed-rfp" name="completed-rfp" type="checkbox" />
-                    <label for="completed-rfp">Completed</label>
-                  </li>
-                </ul>
-              </li>
-              <li class="subcategory">
-                <!--input class="vacant-checkbox vacant-header" id="vacant-structures" name="vacant-structures" type="checkbox">
+                            <li>
+                                <input class="planning-checkbox" id="streetscape-improvements" name="streetscape-improvements" type="checkbox">
+                                <label for="streetscape-improvements">Streetscape Improvements</label>
+                            </li>
+                            <li>
+                                <input class="planning-checkbox" id="completed-planning-projects" name="completed-planning-projects" type="checkbox">
+                                <label for="completed-planning-projects">Completed Planning Studies</label>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <input id="development" name="development" type="checkbox">
+                        <label for="development" class="category" id="development-label">Development</label>
+                        <ul>
+                            <li class="subcategory">
+                                <input class="development-checkbox development-header" id="rfp" name="rfp" type="checkbox">
+                                <label for="rfp">Request for Proposals</label>
+                                <ul>
+                                    <li>
+                                        <input class="development-checkbox" id="open-rfp" name="open-rfp" type="checkbox">
+                                        <label for="open-rfp">Open to Submissions</label>
+                                    </li>
+                                    <li>
+                                        <input class="development-checkbox" id="predevelopment-rfp" name="predevelopment-rfp" type="checkbox">
+                                        <label for="predevelopment-rfp">Pre-Development</label>
+                                    </li>
+                                    <li>
+                                        <input class="development-checkbox" id="in-construction-rfp" name="in-construction-rfp" type="checkbox">
+                                        <label for="in-construction-rfp">In Construction</label>
+                                    </li>
+                                    <li>
+                                        <input class="development-checkbox" id="completed-rfp" name="completed-rfp" type="checkbox">
+                                        <label for="completed-rfp">Completed</label>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="subcategory">
+                                <!--input class="vacant-checkbox vacant-header" id="vacant-structures" name="vacant-structures" type="checkbox">
                                             <label for="vacant-structures">Vacant Structures</label>
                                             <ul>
                                                 <li>
@@ -969,514 +1104,492 @@
                                                     <label for="vacant-commercial">Vacant Commercial</label>
                                                 </li>
                                                 <li-->
-                <input class="development-checkbox" id="vacant-multi" name="vacant-multi" type="checkbox" />
-                <label for="vacant-multi">Vacant Multifamily (In-Progress)</label>
-                <!--/li>
+                                <input class="development-checkbox" id="vacant-multi" name="vacant-multi" type="checkbox">
+                                <label for="vacant-multi">Vacant Multifamily (In-Progress)</label>
+                                <!--/li>
                                                 <li>
                                                     <input class="development-checkbox" id="vacant-land" name="vacant-land" type="checkbox">
                                                     <label for="vacant-land">Vacant Land</label>
                                                 </li>
                                             </ul-->
+                            </li>
+                            <!--li class="subcategory">
+          <input class="permits-header" id="building-permits" name="building-permits" type="checkbox">
+          <label for="building-permits">Building Permits ($500K - $1M)</label>
+          <!--ul>
+            <li>
+            <input class="permits-checkbox" id="residential-permits" name="residential-permits" type="checkbox">
+            <label for="residential-permits">Open Residential Permits</label>
+            </li>
+            <li>
+            <input class="permits-checkbox permits-header" id="commercial-permits" name="commercial-permits" type="checkbox">
+            <label for="commercial-permits">Open Commercial Permits</label>
+            <ul>
+              <li>
+              <input class="permits-checkbox" id="one-million" name="one-million" type="checkbox">
+              <label for="one-million">$0 - $1M</label>
               </li>
-              <li class="subcategory">
-                <input class="permits-header" id="building-permits" name="building-permits" type="checkbox" />
-                <label for="building-permits">Open Building Permits</label>
-                <ul>
-                  <li>
-                    <input class="permits-checkbox" id="residential-permits" name="residential-permits" type="checkbox" />
-                    <label for="residential-permits">Open Residential Permits</label>
-                  </li>
-                  <li>
-                    <input class="permits-checkbox permits-header" id="commercial-permits" name="commercial-permits" type="checkbox" />
-                    <label for="commercial-permits">Open Commercial Permits</label>
-                    <ul>
-                      <li>
-                        <input class="permits-checkbox" id="one-million" name="one-million" type="checkbox" />
-                        <label for="one-million">$0 - $1M</label>
-                      </li>
-                      <li>
-                        <input class="permits-checkbox" id="twenty-five-million" name="twenty-five-million" type="checkbox" />
-                        <label for="twenty-five-million">$1M+</label>
-                      </li>
-                      <!--li>
+              <li>
+              <input class="permits-checkbox" id="twenty-five-million" name="twenty-five-million" type="checkbox">
+              <label for="twenty-five-million">$1M+</label>
+              </li>
+              <li>
                                                             <input class="permits-checkbox" id="over-twenty-five-million" name="over-twenty-five-million" type="checkbox">
                                                             <label for="over-twenty-five-million">&#36;25M+</label>
-                                                        </li-->
-                    </ul>
-                  </li>
-                </ul>
-              </li>
+                                                        </li>
             </ul>
-          </li>
-          <li>
-            <input id="public-transportation" name="public-transportation" type="checkbox" />
-            <label for="public-transportation" class="category" id="public-transportation-label">Public Transportation</label>
-            <ul id="public-transportation-list">
-              <li>
-                <input class="public-transportation-checkbox public-transportation-header" id="bus" name="bus" type="checkbox" />
-                <label for="bus">Bus</label>
-                <ul>
-                  <!--li>
-						<input class="public-transportation-checkbox" id="ddotroutes" name="ddotroutes" type="checkbox">
-						<label for="ddotroutes">DDoT Buses</label>
-						</li-->
-                  <li>
-                    <input class="public-transportation-checkbox" id="smartroutes" name="smartroutes" type="checkbox" />
-                    <label for="smartroutes">Smart Buses</label>
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <input class="public-transportation-checkbox" id="qline" name="qline" type="checkbox" />
-                <label for="qline">QLine</label>
-              </li>
-              <li>
-                <input class="public-transportation-checkbox" id="peoplemover" name="peoplemover" type="checkbox" />
-                <label for="peoplemover">People Mover</label>
-              </li>
-              <li>
-                <input class="public-transportation-checkbox" id="mogobikes" name="mogobikes" type="checkbox" />
-                <label for="mogobikes">MoGo Bike Sharing</label>
-              </li>
-            </ul>
-          </li>
-          <li>
-            <input id="zoning" name="zoning" type="checkbox" />
-            <label for="zoning" class="category" id="zoning-label">Zoning</label>
-            <ul class="zoning-subcategory">
-              <li>
-                <input class="zoning-checkbox zoning-header" id="residential" name="residential" type="checkbox" />
-                <label for="residential">Residential</label>
-                <ul>
-                  <li>
-                    <input class="zoning-checkbox" id="R1" name="R1" type="checkbox" />
-                    <label for="R1">R1</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="R2" name="R2" type="checkbox" />
-                    <label for="R2">R2</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="R3" name="R3" type="checkbox" />
-                    <label for="R3">R3</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="R4" name="R4" type="checkbox" />
-                    <label for="R4">R4</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="R5" name="R5" type="checkbox" />
-                    <label for="R5">R5</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="R6" name="R6" type="checkbox" />
-                    <label for="R6">R6</label>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-            <ul class="zoning-subcategory">
-              <li>
-                <input class="zoning-checkbox zoning-header" id="business" name="business" type="checkbox" />
-                <label for="business">Business</label>
-                <ul>
-                  <li>
-                    <input class="zoning-checkbox" id="B1" name="B1" type="checkbox" />
-                    <label for="B1">B1</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="B2" name="B2" type="checkbox" />
-                    <label for="B2">B2</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="B3" name="B3" type="checkbox" />
-                    <label for="B3">B3</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="B4" name="B4" type="checkbox" />
-                    <label for="B4">B4</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="B5" name="B5" type="checkbox" />
-                    <label for="B5">B5</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="B6" name="B6" type="checkbox" />
-                    <label for="B6">B6</label>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-            <ul class="zoning-subcategory">
-              <li>
-                <input class="zoning-checkbox zoning-header" id="industrial" name="industrial" type="checkbox" />
-                <label for="industrial">Industrial</label>
-                <ul>
-                  <li>
-                    <input class="zoning-checkbox" id="M1" name="M1" type="checkbox" />
-                    <label for="M1">M1</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="M2" name="M2" type="checkbox" />
-                    <label for="M2">M2</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="M3" name="M3" type="checkbox" />
-                    <label for="M3">M3</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="M4" name="M4" type="checkbox" />
-                    <label for="M4">M4</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="M5" name="M5" type="checkbox" />
-                    <label for="M5">M5</label>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-            <ul class="zoning-subcategory">
-              <li>
-                <input class="zoning-checkbox zoning-header" id="special-district" name="special-district" type="checkbox" />
-                <label for="special-district">Special Districts</label>
-                <ul>
-                  <li>
-                    <input class="zoning-checkbox" id="PD" name="PD" type="checkbox" />
-                    <label for="PD">PD</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="P1" name="P1" type="checkbox" />
-                    <label for="P1">P1</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="PC" name="PC" type="checkbox" />
-                    <label for="PC">PC</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="PCA" name="PCA" type="checkbox" />
-                    <label for="PCA">PCA</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="TM" name="TM" type="checkbox" />
-                    <label for="TM">TM</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="PR" name="PR" type="checkbox" />
-                    <label for="PR">PR</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="W1" name="W1" type="checkbox" />
-                    <label for="W1">W1</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="SD1" name="SD1" type="checkbox" />
-                    <label for="SD1">SD1</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="SD2" name="SD2" type="checkbox" />
-                    <label for="SD2">SD2</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="SD3" name="SD3" type="checkbox" />
-                    <label for="SD3">SD3</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="SD4" name="SD4" type="checkbox" />
-                    <label for="SD4">SD4</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="SD5" name="SD5" type="checkbox" />
-                    <label for="SD5">SD5</label>
-                  </li>
-                  <li>
-                    <input class="zoning-checkbox" id="SD6" name="SD6" type="checkbox" />
-                    <label for="SD6">SD6</label>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-      <div class="mapboxgl-missing-css">Missing Mapbox GL JS CSS</div>
-      <div class="mapboxgl-canvas-container mapboxgl-interactive mapboxgl-touch-drag-pan mapboxgl-touch-zoom-rotate">
-        <canvas
-          class="mapboxgl-canvas"
-          tabindex="0"
-          aria-label="Map"
-          width="504"
-          height="710"
-          style="position: absolute; width: 504px; height: 710px;"
-        ></canvas>
-      </div>
-      <div class="mapboxgl-control-container">
-        <div class="mapboxgl-ctrl-top-left"></div>
-        <div class="mapboxgl-ctrl-top-right">
-          <div class="mapboxgl-ctrl-geocoder mapboxgl-ctrl">
-            <span class="geocoder-icon geocoder-icon-search"></span><input type="text" placeholder="Search" />
-            <ul class="suggestions" style="display: none;" rel="display: none;"></ul>
-            <div class="geocoder-pin-right">
-              <button class="geocoder-icon geocoder-icon-close" aria-label="Clear"></button><span class="geocoder-icon geocoder-icon-loading"></span>
-            </div>
-          </div>
-          <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
-            <button class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-in" type="button" aria-label="Zoom In"></button
-            ><button class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-out" type="button" aria-label="Zoom Out"></button
-            ><button class="mapboxgl-ctrl-icon mapboxgl-ctrl-compass" type="button" aria-label="Reset North">
-              <span class="mapboxgl-ctrl-compass-arrow" style="transform: rotate(0deg);"></span>
-            </button>
-          </div>
-        </div>
-        <div class="mapboxgl-ctrl-bottom-left">
-          <div class="mapboxgl-ctrl" style="display: block;">
-            <a class="mapboxgl-ctrl-logo" target="_blank" href="https://www.mapbox.com/" aria-label="Mapbox logo"></a>
-          </div>
-        </div>
-        <div class="mapboxgl-ctrl-bottom-right">
-          <div class="mapboxgl-ctrl mapboxgl-ctrl-attrib mapboxgl-compact">
-            <a href="https://www.mapbox.com/about/maps/" target="_blank">© Mapbox</a>
-            <a href="http://www.openstreetmap.org/about/" target="_blank">© OpenStreetMap</a>
-            <a
-              class="mapbox-improve-map"
-              href="https://www.mapbox.com/feedback/?owner=cityofdetroit&id=cjdm1ljis17142snw099izj6u&access_token=pk.eyJ1IjoiY2l0eW9mZGV0cm9pdCIsImEiOiJjaXZvOWhnM3QwMTQzMnRtdWhyYnk5dTFyIn0.FZMFi0-hvA60KYnI-KivWg"
-              target="_blank"
-              >Improve this map</a
-            >
-          </div>
-        </div>
-      </div>
-      <div class="mapboxgl-missing-css">Missing Mapbox GL JS CSS</div>
-      <div class="mapboxgl-canvas-container mapboxgl-interactive mapboxgl-touch-drag-pan mapboxgl-touch-zoom-rotate">
-        <canvas
-          class="mapboxgl-canvas"
-          tabindex="0"
-          aria-label="Map"
-          width="791"
-          height="710"
-          style="position: absolute; width: 791px; height: 710px;"
-        ></canvas>
-      </div>
-      <div class="mapboxgl-control-container">
-        <div class="mapboxgl-ctrl-top-left"></div>
-        <div class="mapboxgl-ctrl-top-right">
-          <div class="mapboxgl-ctrl-geocoder mapboxgl-ctrl">
-            <span class="geocoder-icon geocoder-icon-search"></span><input type="text" placeholder="Search" />
-            <ul class="suggestions" style="display: none;" rel="display: none;"></ul>
-            <div class="geocoder-pin-right">
-              <button class="geocoder-icon geocoder-icon-close" aria-label="Clear"></button><span class="geocoder-icon geocoder-icon-loading"></span>
-            </div>
-          </div>
-          <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
-            <button class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-in" type="button" aria-label="Zoom In"></button
-            ><button class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-out" type="button" aria-label="Zoom Out"></button
-            ><button class="mapboxgl-ctrl-icon mapboxgl-ctrl-compass" type="button" aria-label="Reset North">
-              <span class="mapboxgl-ctrl-compass-arrow" style="transform: rotate(0deg);"></span>
-            </button>
-          </div>
-        </div>
-        <div class="mapboxgl-ctrl-bottom-left">
-          <div class="mapboxgl-ctrl" style="display: block;">
-            <a class="mapboxgl-ctrl-logo" target="_blank" href="https://www.mapbox.com/" aria-label="Mapbox logo"></a>
-          </div>
-        </div>
-        <div class="mapboxgl-ctrl-bottom-right">
-          <div class="mapboxgl-ctrl mapboxgl-ctrl-attrib">
-            <a href="https://www.mapbox.com/about/maps/" target="_blank">© Mapbox</a>
-            <a href="http://www.openstreetmap.org/about/" target="_blank">© OpenStreetMap</a>
-            <a
-              class="mapbox-improve-map"
-              href="https://www.mapbox.com/feedback/?owner=cityofdetroit&id=cjdm1ljis17142snw099izj6u&access_token=pk.eyJ1IjoiY2l0eW9mZGV0cm9pdCIsImEiOiJjaXZvOWhnM3QwMTQzMnRtdWhyYnk5dTFyIn0.FZMFi0-hvA60KYnI-KivWg"
-              target="_blank"
-              >Improve this map</a
-            >
-          </div>
-        </div>
-      </div>
-      <div class="mapboxgl-missing-css">Missing Mapbox GL JS CSS</div>
-      <div class="mapboxgl-canvas-container mapboxgl-interactive mapboxgl-touch-drag-pan mapboxgl-touch-zoom-rotate">
-        <canvas
-          class="mapboxgl-canvas"
-          tabindex="0"
-          aria-label="Map"
-          width="791"
-          height="731"
-          style="position: absolute; width: 791px; height: 731px;"
-        ></canvas>
-      </div>
-      <div class="mapboxgl-control-container">
-        <div class="mapboxgl-ctrl-top-left"></div>
-        <div class="mapboxgl-ctrl-top-right">
-          <div class="mapboxgl-ctrl-geocoder mapboxgl-ctrl">
-            <span class="geocoder-icon geocoder-icon-search"></span><input type="text" placeholder="Search" />
-            <ul class="suggestions" style="display: none;" rel="display: none;"></ul>
-            <div class="geocoder-pin-right">
-              <button class="geocoder-icon geocoder-icon-close" aria-label="Clear"></button><span class="geocoder-icon geocoder-icon-loading"></span>
-            </div>
-          </div>
-          <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
-            <button class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-in" type="button" aria-label="Zoom In"></button
-            ><button class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-out" type="button" aria-label="Zoom Out"></button
-            ><button class="mapboxgl-ctrl-icon mapboxgl-ctrl-compass" type="button" aria-label="Reset North">
-              <span class="mapboxgl-ctrl-compass-arrow" style="transform: rotate(0deg);"></span>
-            </button>
-          </div>
-        </div>
-        <div class="mapboxgl-ctrl-bottom-left">
-          <div class="mapboxgl-ctrl" style="display: block;">
-            <a class="mapboxgl-ctrl-logo" target="_blank" href="https://www.mapbox.com/" aria-label="Mapbox logo"></a>
-          </div>
-        </div>
-        <div class="mapboxgl-ctrl-bottom-right">
-          <div class="mapboxgl-ctrl mapboxgl-ctrl-attrib">
-            <a href="https://www.mapbox.com/about/maps/" target="_blank">© Mapbox</a>
-            <a href="http://www.openstreetmap.org/about/" target="_blank">© OpenStreetMap</a>
-            <a
-              class="mapbox-improve-map"
-              href="https://www.mapbox.com/feedback/?owner=cityofdetroit&id=cjdm1ljis17142snw099izj6u&access_token=pk.eyJ1IjoiY2l0eW9mZGV0cm9pdCIsImEiOiJjaXZvOWhnM3QwMTQzMnRtdWhyYnk5dTFyIn0.FZMFi0-hvA60KYnI-KivWg"
-              target="_blank"
-              >Improve this map</a
-            >
-          </div>
-        </div>
-      </div>
-    </div>
-    <div id="map-sidebar">
-      <div id="tab-buttons">
-        <span id="info-tab" class="tab-button active">INFO</span>
-        <span id="glossary-tab" class="tab-button">GLOSSARY</span>
-      </div>
-      <div id="loadscreen">
-        <strong class="loading"></strong>
-        <p>Loading...</p>
-      </div>
-      <div id="glossary">
-        <div>
-          <p class="public-assets-header">PUBLIC ASSETS</p>
-          <p>
-            <strong>Detroit Land Bank Authority</strong> (DLBA) and the <strong>City of Detroit marketed properties for sale</strong> – Verify with the Detroit
-            Building Authority and/or the DLBA for the most accurate information.
-          </p>
-        </div>
-        <br />
-        <div>
-          <p class="public-assets-header">RETAIL</p>
-          <p>
-            <strong>Motor City Match</strong> and <strong>Motor City Restore</strong> are programs run by the Detroit Economic Growth Corporation that support
-            entrepreneurs and existing small businesses.
-          </p>
-        </div>
-        <br />
-        <div>
-          <p class="public-assets-header">PLANNING & HOUSING</p>
-          <p class="public-assets-sub-header">There are several planning areas for different purposes city wide, explainations are below:</p>
-          <ul>
-            <li>
-              <strong>Targeted Multifamily Housing Areas</strong> – identify areas of the city with stronger housing markets and active commercial corridors.
-              Developers of both market-rate and affordable housing, are encouraged to focus in these areas. To understand more, please check out the Housing &
-              Revitalization Department Developers Page.
-            </li>
-            <li>
-              <strong>Planning Areas and Strategic Neighborhood Fund Investment Areas</strong> are areas are subject to City of Detroit led neighborhood
-              planning studies that use community engagement to guide future public investment and development in neighborhoods.
-            </li>
-            <li>
-              <strong>Streetscape Improvements</strong> – Publically funded streetscape improvements intended to promote walkability and small businesses.
             </li>
           </ul>
+          </li-->
+                        </ul>
+                    </li>
+                    <li>
+                        <input id="public-transportation" name="public-transportation" type="checkbox">
+                        <label for="public-transportation" class="category" id="public-transportation-label">Public Transportation</label>
+                        <ul id="public-transportation-list">
+                            <!--li>
+          <input class="public-transportation-checkbox public-transportation-header" id="bus" name="bus" type="checkbox">
+          <label for="bus">Bus</label>
+          <ul>
+            <li>
+            <input class="public-transportation-checkbox" id="ddotroutes" name="ddotroutes" type="checkbox">
+            <label for="ddotroutes">DDoT Buses</label>
+            </li>
+          </ul>
+          </li-->
+                            <li>
+                                <input class="public-transportation-checkbox" id="smartroutes" name="smartroutes" type="checkbox">
+                                <label for="smartroutes">Smart Buses</label>
+                            </li>
+                            <li>
+                                <input class="public-transportation-checkbox" id="qline" name="qline" type="checkbox">
+                                <label for="qline">QLine</label>
+                            </li>
+                            <li>
+                                <input class="public-transportation-checkbox" id="peoplemover" name="peoplemover" type="checkbox">
+                                <label for="peoplemover">People Mover</label>
+                            </li>
+                            <li>
+                                <input class="public-transportation-checkbox" id="mogobikes" name="mogobikes" type="checkbox">
+                                <label for="mogobikes">MoGo Bike Sharing</label>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <input id="zoning" name="zoning" type="checkbox">
+                        <label for="zoning" class="category" id="zoning-label">Zoning</label>
+                        <ul class="zoning-subcategory">
+                            <li>
+                                <input class="zoning-checkbox zoning-header" id="residential" name="residential" type="checkbox">
+                                <label for="residential">Residential</label>
+                                <ul>
+                                    <li>
+                                        <input class="zoning-checkbox" id="R1" name="R1" type="checkbox">
+                                        <label for="R1">R1</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="R2" name="R2" type="checkbox">
+                                        <label for="R2">R2</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="R3" name="R3" type="checkbox">
+                                        <label for="R3">R3</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="R4" name="R4" type="checkbox">
+                                        <label for="R4">R4</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="R5" name="R5" type="checkbox">
+                                        <label for="R5">R5</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="R6" name="R6" type="checkbox">
+                                        <label for="R6">R6</label>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul class="zoning-subcategory">
+                            <li>
+                                <input class="zoning-checkbox zoning-header" id="business" name="business" type="checkbox">
+                                <label for="business">Business</label>
+                                <ul>
+                                    <li>
+                                        <input class="zoning-checkbox" id="B1" name="B1" type="checkbox">
+                                        <label for="B1">B1</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="B2" name="B2" type="checkbox">
+                                        <label for="B2">B2</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="B3" name="B3" type="checkbox">
+                                        <label for="B3">B3</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="B4" name="B4" type="checkbox">
+                                        <label for="B4">B4</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="B5" name="B5" type="checkbox">
+                                        <label for="B5">B5</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="B6" name="B6" type="checkbox">
+                                        <label for="B6">B6</label>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul class="zoning-subcategory">
+                            <li>
+                                <input class="zoning-checkbox zoning-header" id="industrial" name="industrial" type="checkbox">
+                                <label for="industrial">Industrial</label>
+                                <ul>
+                                    <li>
+                                        <input class="zoning-checkbox" id="M1" name="M1" type="checkbox">
+                                        <label for="M1">M1</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="M2" name="M2" type="checkbox">
+                                        <label for="M2">M2</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="M3" name="M3" type="checkbox">
+                                        <label for="M3">M3</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="M4" name="M4" type="checkbox">
+                                        <label for="M4">M4</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="M5" name="M5" type="checkbox">
+                                        <label for="M5">M5</label>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul class="zoning-subcategory">
+                            <li>
+                                <input class="zoning-checkbox zoning-header" id="special-district" name="special-district" type="checkbox">
+                                <label for="special-district">Special Districts</label>
+                                <ul>
+                                    <li>
+                                        <input class="zoning-checkbox" id="PD" name="PD" type="checkbox">
+                                        <label for="PD">PD</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="P1" name="P1" type="checkbox">
+                                        <label for="P1">P1</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="PC" name="PC" type="checkbox">
+                                        <label for="PC">PC</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="PCA" name="PCA" type="checkbox">
+                                        <label for="PCA">PCA</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="TM" name="TM" type="checkbox">
+                                        <label for="TM">TM</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="PR" name="PR" type="checkbox">
+                                        <label for="PR">PR</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="W1" name="W1" type="checkbox">
+                                        <label for="W1">W1</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="SD1" name="SD1" type="checkbox">
+                                        <label for="SD1">SD1</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="SD2" name="SD2" type="checkbox">
+                                        <label for="SD2">SD2</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="SD3" name="SD3" type="checkbox">
+                                        <label for="SD3">SD3</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="SD4" name="SD4" type="checkbox">
+                                        <label for="SD4">SD4</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="SD5" name="SD5" type="checkbox">
+                                        <label for="SD5">SD5</label>
+                                    </li>
+                                    <li>
+                                        <input class="zoning-checkbox" id="SD6" name="SD6" type="checkbox">
+                                        <label for="SD6">SD6</label>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="mapboxgl-missing-css">Missing Mapbox GL JS CSS
+            </div>
+            <div class="mapboxgl-canvas-container mapboxgl-interactive mapboxgl-touch-drag-pan mapboxgl-touch-zoom-rotate">
+                <canvas class="mapboxgl-canvas" tabindex="0" aria-label="Map" width="504" height="710" style="position: absolute; width: 504px; height: 710px;"></canvas>
+            </div>
+            <div class="mapboxgl-control-container">
+                <div class="mapboxgl-ctrl-top-left">
+                </div>
+                <div class="mapboxgl-ctrl-top-right">
+                    <div class="mapboxgl-ctrl-geocoder mapboxgl-ctrl"><span class="geocoder-icon geocoder-icon-search"></span>
+                        <input type="text" placeholder="Search">
+                        <ul class="suggestions" style="display: none;" rel="display: none;">
+                        </ul>
+                        <div class="geocoder-pin-right">
+                            <button class="geocoder-icon geocoder-icon-close" aria-label="Clear"></button><span class="geocoder-icon geocoder-icon-loading"></span>
+                        </div>
+                    </div>
+                    <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
+                        <button class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-in" type="button" aria-label="Zoom In"></button>
+                        <button class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-out" type="button" aria-label="Zoom Out"></button>
+                        <button class="mapboxgl-ctrl-icon mapboxgl-ctrl-compass" type="button" aria-label="Reset North"><span class="mapboxgl-ctrl-compass-arrow" style="transform: rotate(0deg);"></span></button>
+                    </div>
+                </div>
+                <div class="mapboxgl-ctrl-bottom-left">
+                    <div class="mapboxgl-ctrl" style="display: block;">
+                        <a class="mapboxgl-ctrl-logo" target="_blank" href="https://www.mapbox.com/" aria-label="Mapbox logo"></a>
+                    </div>
+                </div>
+                <div class="mapboxgl-ctrl-bottom-right">
+                    <div class="mapboxgl-ctrl mapboxgl-ctrl-attrib mapboxgl-compact"><a href="https://www.mapbox.com/about/maps/" target="_blank">© Mapbox</a> <a href="http://www.openstreetmap.org/about/" target="_blank">© OpenStreetMap</a> <a class="mapbox-improve-map" href="https://www.mapbox.com/feedback/?owner=cityofdetroit&id=cjdm1ljis17142snw099izj6u&access_token=pk.eyJ1IjoiY2l0eW9mZGV0cm9pdCIsImEiOiJjaXZvOWhnM3QwMTQzMnRtdWhyYnk5dTFyIn0.FZMFi0-hvA60KYnI-KivWg" target="_blank">Improve this map</a>
+                    </div>
+                </div>
+            </div>
+            <div class="mapboxgl-missing-css">Missing Mapbox GL JS CSS
+            </div>
+            <div class="mapboxgl-canvas-container mapboxgl-interactive mapboxgl-touch-drag-pan mapboxgl-touch-zoom-rotate">
+                <canvas class="mapboxgl-canvas" tabindex="0" aria-label="Map" width="791" height="710" style="position: absolute; width: 791px; height: 710px;"></canvas>
+            </div>
+            <div class="mapboxgl-control-container">
+                <div class="mapboxgl-ctrl-top-left">
+                </div>
+                <div class="mapboxgl-ctrl-top-right">
+                    <div class="mapboxgl-ctrl-geocoder mapboxgl-ctrl"><span class="geocoder-icon geocoder-icon-search"></span>
+                        <input type="text" placeholder="Search">
+                        <ul class="suggestions" style="display: none;" rel="display: none;">
+                        </ul>
+                        <div class="geocoder-pin-right">
+                            <button class="geocoder-icon geocoder-icon-close" aria-label="Clear"></button><span class="geocoder-icon geocoder-icon-loading"></span>
+                        </div>
+                    </div>
+                    <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
+                        <button class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-in" type="button" aria-label="Zoom In"></button>
+                        <button class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-out" type="button" aria-label="Zoom Out"></button>
+                        <button class="mapboxgl-ctrl-icon mapboxgl-ctrl-compass" type="button" aria-label="Reset North"><span class="mapboxgl-ctrl-compass-arrow" style="transform: rotate(0deg);"></span></button>
+                    </div>
+                </div>
+                <div class="mapboxgl-ctrl-bottom-left">
+                    <div class="mapboxgl-ctrl" style="display: block;">
+                        <a class="mapboxgl-ctrl-logo" target="_blank" href="https://www.mapbox.com/" aria-label="Mapbox logo"></a>
+                    </div>
+                </div>
+                <div class="mapboxgl-ctrl-bottom-right">
+                    <div class="mapboxgl-ctrl mapboxgl-ctrl-attrib"><a href="https://www.mapbox.com/about/maps/" target="_blank">© Mapbox</a> <a href="http://www.openstreetmap.org/about/" target="_blank">© OpenStreetMap</a> <a class="mapbox-improve-map" href="https://www.mapbox.com/feedback/?owner=cityofdetroit&id=cjdm1ljis17142snw099izj6u&access_token=pk.eyJ1IjoiY2l0eW9mZGV0cm9pdCIsImEiOiJjaXZvOWhnM3QwMTQzMnRtdWhyYnk5dTFyIn0.FZMFi0-hvA60KYnI-KivWg" target="_blank">Improve this map</a>
+                    </div>
+                </div>
+            </div>
+            <div class="mapboxgl-missing-css">Missing Mapbox GL JS CSS</div>
+            <div class="mapboxgl-canvas-container mapboxgl-interactive mapboxgl-touch-drag-pan mapboxgl-touch-zoom-rotate">
+                <canvas class="mapboxgl-canvas" tabindex="0" aria-label="Map" width="791" height="731" style="position: absolute; width: 791px; height: 731px;"></canvas>
+            </div>
+            <div class="mapboxgl-control-container">
+                <div class="mapboxgl-ctrl-top-left"></div>
+                <div class="mapboxgl-ctrl-top-right">
+                    <div class="mapboxgl-ctrl-geocoder mapboxgl-ctrl"><span class="geocoder-icon geocoder-icon-search"></span>
+                        <input type="text" placeholder="Search">
+                        <ul class="suggestions" style="display: none;" rel="display: none;"></ul>
+                        <div class="geocoder-pin-right">
+                            <button class="geocoder-icon geocoder-icon-close" aria-label="Clear"></button><span class="geocoder-icon geocoder-icon-loading"></span></div>
+                    </div>
+                    <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
+                        <button class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-in" type="button" aria-label="Zoom In"></button>
+                        <button class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-out" type="button" aria-label="Zoom Out"></button>
+                        <button class="mapboxgl-ctrl-icon mapboxgl-ctrl-compass" type="button" aria-label="Reset North"><span class="mapboxgl-ctrl-compass-arrow" style="transform: rotate(0deg);"></span></button>
+                    </div>
+                </div>
+                <div class="mapboxgl-ctrl-bottom-left">
+                    <div class="mapboxgl-ctrl" style="display: block;">
+                        <a class="mapboxgl-ctrl-logo" target="_blank" href="https://www.mapbox.com/" aria-label="Mapbox logo"></a>
+                    </div>
+                </div>
+                <div class="mapboxgl-ctrl-bottom-right">
+                    <div class="mapboxgl-ctrl mapboxgl-ctrl-attrib"><a href="https://www.mapbox.com/about/maps/" target="_blank">© Mapbox</a> <a href="http://www.openstreetmap.org/about/" target="_blank">© OpenStreetMap</a> <a class="mapbox-improve-map" href="https://www.mapbox.com/feedback/?owner=cityofdetroit&id=cjdm1ljis17142snw099izj6u&access_token=pk.eyJ1IjoiY2l0eW9mZGV0cm9pdCIsImEiOiJjaXZvOWhnM3QwMTQzMnRtdWhyYnk5dTFyIn0.FZMFi0-hvA60KYnI-KivWg" target="_blank">Improve this map</a></div>
+                </div>
+            </div>
         </div>
-        <br />
-        <div>
-          <p class="public-assets-header">DEVELOPMENT</p>
-          <p><strong>Request for Proposals</strong> - Calls for development teams to develop publically owned parcels and/or structures</p>
-          <br />
-          <p><strong>Zoning: </strong></p>
-          <br />
-          <p><u>Residential</u></p>
-          <p id="R1"><strong>R1</strong> Single-Family Residential District</p>
-          <p id="R2"><strong>R2</strong> Two-Family Residential District</p>
-          <p id="R3"><strong>R3</strong> Low Density Residential District</p>
-          <p id="R4"><strong>R4</strong> Thoroughfare Residential District</p>
-          <p id="R5"><strong>R5</strong> Medium Density Residential District</p>
-          <p id="R6"><strong>R6</strong> High Density Residential District</p>
-          <br />
-          <p><u>Business / Commercial</u></p>
-          <p id="B1"><strong>B1</strong> Restricted Business District</p>
-          <p id="B2"><strong>B2</strong> Local Business and Residential District</p>
-          <p id="B3"><strong>B3</strong> Shopping District</p>
-          <p id="B4"><strong>B4</strong> General Business District</p>
-          <p id="B5"><strong>B5</strong> Major Business District</p>
-          <p id="B6"><strong>B6</strong> General Services District</p>
-          <br />
-          <p><u>Industrial Districts</u></p>
-          <p id="M1"><strong>M1</strong> Limited Industrial District</p>
-          <p id="M2"><strong>M2</strong> Restricted Industrial District</p>
-          <p id="M3"><strong>M3</strong> General Industrial District</p>
-          <p id="M4"><strong>M4</strong> Intensive Industrial District</p>
-          <p id="M5"><strong>M5</strong> Special Industrial District</p>
-          <br />
-          <p><u>Special Districts</u></p>
-          <p id="PD"><strong>PD</strong> Planned Development District</p>
-          <p id="P1"><strong>P1</strong> Open Parking District</p>
-          <p id="PC"><strong>PC</strong> Public Center District</p>
-          <p id="PCA"><strong>PCA</strong> Public Center Adjacent District (Restricted Central business District</p>
-          )
-          <p id="TM"><strong>TM</strong> Transitional-Industrial District</p>
-          <p id="PR"><strong>PR</strong> Parks and Recreation District</p>
-          <p id="W1"><strong>W1</strong> Waterfront-Industrial District</p>
-          <p id="SD1"><strong>SD1</strong> Special Development District, Small-Scale, Mixed-Use</p>
-          <p id="SD2"><strong>SD2</strong> Special Development District, Mixed-Use</p>
-          <p id="SD3"><strong>SD3</strong> Special Development District, Technology and Research</p>
-          <p id="SD4"><strong>SD4</strong> Special Development District, Riverfront mixed use</p>
-          <p id="SD5"><strong>SD5</strong> Special Development District, Casinos</p>
+        <div id="map-sidebar">
+            <div id="tab-buttons">
+                <span id="info-tab" class="tab-button active">INFO</span>
+                <span id="glossary-tab" class="tab-button">GLOSSARY</span>
+            </div>
+            <div id="loadscreen">
+                <strong class="loading"></strong>
+                <p>Loading...
+                </p>
+            </div>
+            <div id="glossary">
+                <div>
+                    <p class="public-assets-header">PUBLIC ASSETS
+                    </p>
+                    <p><strong>Detroit Land Bank Authority</strong> (DLBA) and the <strong>City of Detroit marketed properties for sale</strong> – Verify with the Detroit Building Authority and/or the DLBA for the most accurate information.
+                    </p>
+                </div>
+                <br>
+                <div>
+                    <p class="public-assets-header">RETAIL
+                    </p>
+                    <p><strong>Motor City Match</strong> and <strong>Motor City Restore</strong> are programs run by the Detroit Economic Growth Corporation that support entrepreneurs and existing small businesses.
+                    </p>
+                </div>
+                <br>
+                <div>
+                    <p class="public-assets-header">PLANNING & HOUSING
+                    </p>
+                    <p class="public-assets-sub-header">There are several planning areas for different purposes city wide, explainations are below:
+                    </p>
+                    <ul>
+                        <li><strong>Targeted Multifamily Housing Areas</strong> – identify areas of the city with stronger housing markets and active commercial corridors. Developers of both market-rate and affordable housing, are encouraged to focus in these areas. To understand more, please check out the Housing & Revitalization Department Developers Page. </li>
+                        <li><strong>Planning Areas and Strategic Neighborhood Fund Investment Areas</strong> are areas are subject to City of Detroit led neighborhood planning studies that use community engagement to guide future public investment and development in neighborhoods.</li>
+                        <li><strong>Streetscape Improvements</strong> – Publically funded streetscape improvements intended to promote walkability and small businesses. </li>
+                    </ul>
+                </div>
+                <br>
+                <div>
+                    <p class="public-assets-header">DEVELOPMENT
+                    </p>
+                    <p><strong>Request for Proposals</strong> - Calls for development teams to develop publically owned parcels and/or structures
+                    </p>
+                    <br>
+                    <p><strong>Zoning: </strong>
+                    </p>
+                    <br>
+                    <p><u>Residential</u>
+                    </p>
+                    <p id="R1"><strong>R1</strong> Single-Family Residential District
+                    </p>
+                    <p id="R2"><strong>R2</strong> Two-Family Residential District
+                    </p>
+                    <p id="R3"><strong>R3</strong> Low Density Residential District
+                    </p>
+                    <p id="R4"><strong>R4</strong> Thoroughfare Residential District
+                    </p>
+                    <p id="R5"><strong>R5</strong> Medium Density Residential District
+                    </p>
+                    <p id="R6"><strong>R6</strong> High Density Residential District
+                    </p>
+                    <br>
+                    <p><u>Business / Commercial</u>
+                    </p>
+                    <p id="B1"><strong>B1</strong> Restricted Business District
+                    </p>
+                    <p id="B2"><strong>B2</strong> Local Business and Residential District
+                    </p>
+                    <p id="B3"><strong>B3</strong> Shopping District
+                    </p>
+                    <p id="B4"><strong>B4</strong> General Business District
+                    </p>
+                    <p id="B5"><strong>B5</strong> Major Business District
+                    </p>
+                    <p id="B6"><strong>B6</strong> General Services District
+                    </p>
+                    <br>
+                    <p><u>Industrial Districts</u>
+                    </p>
+                    <p id="M1"><strong>M1</strong> Limited Industrial District
+                    </p>
+                    <p id="M2"><strong>M2</strong> Restricted Industrial District
+                    </p>
+                    <p id="M3"><strong>M3</strong> General Industrial District
+                    </p>
+                    <p id="M4"><strong>M4</strong> Intensive Industrial District
+                    </p>
+                    <p id="M5"><strong>M5</strong> Special Industrial District
+                    </p>
+                    <br>
+                    <p><u>Special Districts</u>
+                    </p>
+                    <p id="PD"><strong>PD</strong> Planned Development District
+                    </p>
+                    <p id="P1"><strong>P1</strong> Open Parking District
+                    </p>
+                    <p id="PC"><strong>PC</strong> Public Center District
+                    </p>
+                    <p id="PCA"><strong>PCA</strong> Public Center Adjacent District (Restricted Central business District
+                    </p>)
+                    <p id="TM"><strong>TM</strong> Transitional-Industrial District
+                    </p>
+                    <p id="PR"><strong>PR</strong> Parks and Recreation District
+                    </p>
+                    <p id="W1"><strong>W1</strong> Waterfront-Industrial District
+                    </p>
+                    <p id="SD1"><strong>SD1</strong> Special Development District, Small-Scale, Mixed-Use
+                    </p>
+                    <p id="SD2"><strong>SD2</strong> Special Development District, Mixed-Use
+                    </p>
+                    <p id="SD3"><strong>SD3</strong> Special Development District, Technology and Research
+                    </p>
+                    <p id="SD4"><strong>SD4</strong> Special Development District, Riverfront mixed use
+                    </p>
+                    <p id="SD5"><strong>SD5</strong> Special Development District, Casinos
+                    </p>
+                </div>
+                <div>
+                    <p class="public-assets-header">PUBLIC TRANSPORTATION
+                    </p>
+                    <p><strong>DDOT Buses</strong> - Detroit Department of Transportation Bus Routes
+                    </p>
+                    <p><strong>SMART Buses</strong> - Suburban Mobility Authority for Regional Transportation (SMART) is Southeast Michigan's only regional bus system
+                    </p>
+                    <p><strong>QLine</strong> - 3.3 mile streetcar that rides along the Woodward Corridor
+                    </p>
+                    <p><strong>People Mover</strong> - Elevated Train that routed throughout Downtown Detroit
+                    </p>
+                    <p><strong>MoGo Bike Sharing</strong> - Bike rentals across the greater downtown
+                    </p>
+                </div>
+            </div>
+            <div id="map-sidebar-info">
+                <h4 class="map-sidebar-header">DETROIT</h4>
+                <div class="occupancy-data">
+                    <div data-field="Photo_URL" class="frame"><img alt="Photo of Detroit" src="https://detroitmi.gov/sites/detroitmi.localhost/files/styles/de2e/public/2018-11/detroit1.jpg"></div>
+                </div>
+                <div style="display:none" class="mcm-data"></div>
+                <div style="display:none" class="mcr-data"></div>
+                <div style="display:none" class="permit-data"></div>
+                <div class="key-data">
+                    <h5>DEMOGRAPHICS</h5>
+                    <p><span class="field-label">POPULATION:</span> 672,795</p>
+                    <h5>REAL ESTATE</h5>
+                    <p><span class="field-label"># CITY-OWNED PARCELS:</span> <span id="city-owned-number">9,029</span></p>
+                    <p><span class="field-label"># DLBA PARCELS:</span> <span id="dlba-number">95,209</span></p>
+                    <p><span class="field-label"># TOTAL RFP DEVELOPMENTS:</span> <span id="total-rfp-number">27</span></p>
+                    <p><span class="field-label"># OPEN BUILDING PERMITS ($500K - $1M):</span> <span id="permits-number">2</span></p>
+                    <h5>INFRASTRUCTURE</h5>
+                    <p><span class="field-label"># CITY-OWNED PARKS:</span> <span id="city-owned-parks-number">309</span></p>
+                    <h5>RETAIL</h5>
+                    <p><span class="field-label">MOTOR CITY MATCH OPEN BUSINESSES:</span> <span id="motor-city-match-businesses-number">36</span></p>
+                    <p><span class="field-label">MOTOR CITY RESTORE RECIPIENTS:</span> <span id="motor-city-restore-number">68</span></p>
+                </div>
+                <div class="additional-data"></div>
+            </div>
         </div>
-        <div>
-          <p class="public-assets-header">PUBLIC TRANSPORTATION</p>
-          <p><strong>DDOT Buses</strong> - Detroit Department of Transportation Bus Routes</p>
-          <p><strong>SMART Buses</strong> - Suburban Mobility Authority for Regional Transportation (SMART) is Southeast Michigan's only regional bus system</p>
-          <p><strong>QLine</strong> - 3.3 mile streetcar that rides along the Woodward Corridor</p>
-          <p><strong>People Mover</strong> - Elevated Train that routed throughout Downtown Detroit</p>
-          <p><strong>MoGo Bike Sharing</strong> - Bike rentals across the greater downtown</p>
-        </div>
-      </div>
-      <div id="map-sidebar-info">
-        <h4 class="map-sidebar-header">DETROIT</h4>
-        <div class="occupancy-data">
-          <div data-field="Photo_URL" class="frame">
-            <img alt="Photo of Detroit" src="https://detroitmi.gov/sites/detroitmi.localhost/files/styles/de2e/public/2018-11/detroit1.jpg" />
-          </div>
-        </div>
-        <div style="display:none" class="mcm-data"></div>
-        <div style="display:none" class="mcr-data"></div>
-        <div style="display:none" class="permit-data"></div>
-        <div class="key-data">
-          <h5>DEMOGRAPHICS</h5>
-          <p><span class="field-label">POPULATION:</span> 672,795</p>
-          <h5>REAL ESTATE</h5>
-          <p><span class="field-label"># CITY-OWNED PARCELS:</span> <span id="city-owned-number">9,029</span></p>
-          <p><span class="field-label"># DLBA PARCELS:</span> <span id="dlba-number">95,209</span></p>
-          <p><span class="field-label"># TOTAL RFP DEVELOPMENTS:</span> <span id="total-rfp-number">27</span></p>
-          <p><span class="field-label"># OPEN BSEED COMMERCIAL PERMITS:</span> <span id="open-commercial-permits-number">673</span></p>
-          <p><span class="field-label"># OPEN BSEED RESIDENTIAL PERMITS:</span> <span id="open-residential-permits-number">2,277</span></p>
-          <h5>INFRASTRUCTURE</h5>
-          <p><span class="field-label"># CITY-OWNED PARKS:</span> <span id="city-owned-parks-number">309</span></p>
-          <h5>RETAIL</h5>
-          <p><span class="field-label">MOTOR CITY MATCH OPEN BUSINESSES:</span> <span id="motor-city-match-businesses-number">36</span></p>
-          <p><span class="field-label">MOTOR CITY RESTORE RECIPIENTS:</span> <span id="motor-city-restore-number">68</span></p>
-        </div>
-        <div class="additional-data"></div>
-      </div>
+
     </div>
-  </div>
-  <!-- End Paste Here -->
-  <br />
-  <div class="container">
-    Opportunity Map data is sourced from the following: Detroit Open Data Portal, Detroit Land Bank Authority (DLBA), City of Detroit Assessors Office, Housing
-    and Revitalization Department, Planning and Development Department, Detroit Economic Growth Corporation - Motor City Match and Motor City Restore, Data
-    Driven Detroit, Buildings and Safety Engineering and Environment Department, Department of Transportation. In a few instances, DLBA data may be more
-    up-to-date than the City of Detroit Assessors Office. For questions, please visit the City of Detroit Assessors Office and/or provide us direct feedback
-    <a href="https://app.smartsheet.com/b/form/e2fe1e14bf2b49f4a7d146797fc26229">here</a>.
-  </div>
-  <br />
+    <!-- End Paste Here -->
+    <br>
+    <div class="container">Opportunity Map data is sourced from the following: Detroit Open Data Portal, Detroit Land Bank Authority (DLBA), City of Detroit Assessors Office, Housing and Revitalization Department, Planning and Development Department, Detroit Economic Growth Corporation - Motor City Match and Motor City Restore, Data Driven Detroit, Buildings and Safety Engineering and Environment Department, Department of Transportation. In a few instances, DLBA data may be more up-to-date than the City of Detroit Assessors Office. For questions, please visit the City of Detroit Assessors Office and/or provide us direct feedback <a href="https://app.smartsheet.com/b/form/e2fe1e14bf2b49f4a7d146797fc26229">here</a>.</div>
+    <br>
 </main>
 <script>
   //activate toggle on filters button
@@ -1917,7 +2030,7 @@
       paint: {
         "line-color": "#324965"
       }
-    });
+    });/*
     map.addLayer({
       id: "residential-permits",
       type: "circle",
@@ -1962,7 +2075,7 @@
         },
         "circle-color": "#ca5572"
       }
-    });
+    });*/
     map.addLayer({
       id: "peoplemover",
       type: "line",
@@ -2083,7 +2196,7 @@
                                 'circle-color': '#aa0044'
                             }
                         });*/
-    map.addLayer({
+    /*map.addLayer({
       id: "marketed-properties",
       type: "circle",
       source: "marketed-properties",
@@ -2112,7 +2225,7 @@
         },
         "circle-color": "#279989"
       }
-    });
+    });*/
     map.addLayer({
       id: "vacant-multi-fill",
       type: "fill",
@@ -2478,8 +2591,8 @@
                             } */
       //City-owned Properties - on
       if (this_source === "city-owned-properties") {
-        map.setLayoutProperty("marketed-properties", "visibility", "visible");
-        map.setLayoutProperty("tax-status-city-owned-properties", "visibility", "visible");
+        /*map.setLayoutProperty("marketed-properties", "visibility", "visible");
+        map.setLayoutProperty("tax-status-city-owned-properties", "visibility", "visible");*/
         map.setLayoutProperty("parksgeojson", "visibility", "visible");
       }
       //Retail - on
@@ -2506,8 +2619,8 @@
         map.setLayoutProperty("dlba-side-lots", "visibility", "visible");
         map.setLayoutProperty("dlba-rehabbed-and-ready", "visibility", "visible");
         map.setLayoutProperty("dlba-own-it-now", "visibility", "visible");
-        map.setLayoutProperty("marketed-properties", "visibility", "visible");
-        map.setLayoutProperty("tax-status-city-owned-properties", "visibility", "visible");
+        /*map.setLayoutProperty("marketed-properties", "visibility", "visible");
+        map.setLayoutProperty("tax-status-city-owned-properties", "visibility", "visible");*/
         map.setLayoutProperty("parksgeojson", "visibility", "visible");
       }
       //Development - on
@@ -2523,9 +2636,9 @@
         /*map.setLayoutProperty("vacant-commercial", "visibility", "visible");
                                 map.setLayoutProperty("vacant-multi", "visibility", "visible");
                                 map.setLayoutProperty("vacant-land", "visibility", "visible");*/
-        map.setLayoutProperty("residential-permits", "visibility", "visible");
+        /*map.setLayoutProperty("residential-permits", "visibility", "visible");
         map.setLayoutProperty("one-million", "visibility", "visible");
-        map.setLayoutProperty("twenty-five-million", "visibility", "visible");
+        map.setLayoutProperty("twenty-five-million", "visibility", "visible");*/
         //map.setLayoutProperty("over-twenty-five-million", "visible", "visible");
       }
       //Planning and Housing Areas - on
@@ -2573,9 +2686,9 @@
       }
       //Building Permits - on
       else if (this_source === "building-permits") {
-        map.setLayoutProperty("residential-permits", "visibility", "visible");
+        /*map.setLayoutProperty("residential-permits", "visibility", "visible");
         map.setLayoutProperty("one-million", "visibility", "visible");
-        map.setLayoutProperty("twenty-five-million", "visibility", "visible");
+        map.setLayoutProperty("twenty-five-million", "visibility", "visible");*/
         //map.setLayoutProperty("over-twenty-five-million", "visibility", "visible");
       }
       //RFPs - on
@@ -2611,8 +2724,8 @@
       }
       //Commercial Permits - on
       else if (this_source === "commercial-permits") {
-        map.setLayoutProperty("one-million", "visibility", "visible");
-        map.setLayoutProperty("twenty-five-million", "visibility", "visible");
+        /*map.setLayoutProperty("one-million", "visibility", "visible");
+        map.setLayoutProperty("twenty-five-million", "visibility", "visible");*/
         //map.setLayoutProperty("over-twenty-five-million", "visibility", "visible");
       }
       //Bus routes - on
@@ -3068,8 +3181,6 @@
 
       //go thru each field in parcel, create label, and append create variables to append
       parcelPointsOwnership = parcelPointsOwnership[0];
-      console.log(parcelPointsOwnership);
-      console.log(Object.keys(parcelPointsOwnership));
       for (var field in parcelPointsOwnership) {
         if (parcelPointsOwnership.hasOwnProperty(field)) {
           if (field == "propaddr") {
@@ -3274,11 +3385,11 @@
           }
 
           buy_property_btn =
-            '<a class="property-app-link" target="_blank" href="' +
+            '<a class="property-app-link" target="_blank" href=' +
             buy_property_btn_url +
-            '"><span data-program="' +
+            '><span data-program=' +
             program_type +
-            '">' +
+            '>' +
             buy_property_btn_label +
             "</span></a>";
           label = "Detroit Land Bank Program";
@@ -3292,11 +3403,11 @@
           buy_property_btn_label = "Buy this Sidelot";
           buy_property_btn_class = "dlba-sidelot";
           buy_property_btn =
-            '<a class="property-app-link" target="_blank" href="' +
+            '<a class="property-app-link" target="_blank" href=' +
             buy_property_btn_url +
-            '"><span data-program="' +
+            '><span data-program=' +
             program_type +
-            '">' +
+            '>' +
             buy_property_btn_label +
             "</span></a>";
           program_type = '<p data-field=""><span class="field-label">' + label.toUpperCase() + ":</span> " + program_type + "</p>";
@@ -3308,8 +3419,10 @@
             "http://app.detroitmi.gov/PropertyApplicationForm" /*'https://juancatothe.github.io/commercial_property_wizard/?reference=Detroit_Development&address=' + dlba_address*/;
           buy_property_btn_label = "Inquire to Buy This Property";
           buy_property_btn_class = "dlba-not-marketed";
-          buy_property_btn = '<a class="property-app-link" target="_blank" href="' + buy_property_btn_url + '">' + buy_property_btn_label + "</span></a>";
+          buy_property_btn = '<a class="property-app-link" target="_blank" href=' + buy_property_btn_url + '>' + buy_property_btn_label + "</span></a>";
         }
+        console.log(buy_property_btn_url)
+        console.log(buy_property_btn)
       }
       // if(taxable_status_token === "CITY OWNED"|| (vacantMultiFamily[0].features.length>0 && vacantMultiFamily[0].features[0].attributes.Owner === "PDD")||(vacantMultiFamily[0].features.length>0 && vacantMultiFamily[0].features[0].attributes.Owner === "DLBA")){
       //         buy_property_btn_url = 'http://app.detroitmi.gov/PropertyApplicationForm'/*'https://juancatothe.github.io/commercial_property_wizard/?reference=Detroit_Development&address=' + dlba_address*/;
@@ -3379,7 +3492,7 @@
         var parcelImage;
         if (occupancy[0].features[0].attributes.Photo_URL) {
           parcelImage = occupancy[0].features[0].attributes.Photo_URL;
-          parcelImage = '<div data-field="Photo_URL" class="frame"><img alt="Photo of" src="' + parcelImage + '"/></div>';
+          parcelImage = '<div data-field="Photo_URL" class="frame"><img alt="Photo of" src=' + parcelImage + '></div>';
         }
       }
       //append information to sidebar
@@ -3940,7 +4053,7 @@
         }
       });
     }
-    map.on("mouseenter", "residential-permits", function() {
+    /*map.on("mouseenter", "residential-permits", function() {
       map.getCanvas().style.cursor = "pointer";
     });
     // Change it back to a pointer when it leaves.
@@ -3960,7 +4073,7 @@
     // Change it back to a pointer when it leaves.
     map.on("mouseleave", "twenty-five-million", function() {
       map.getCanvas().style.cursor = "";
-    });
+    });*/
     map.on("mouseenter", "mc-restore", function() {
       map.getCanvas().style.cursor = "pointer";
     });
@@ -3974,7 +4087,7 @@
     // Change it back to a pointer when it leaves.
     map.on("mouseleave", "mcm-business", function() {
       map.getCanvas().style.cursor = "";
-    });
+    });/*
     map.on("mouseenter", "marketed-properties", function() {
       map.getCanvas().style.cursor = "pointer";
     });
@@ -4023,7 +4136,7 @@
     // Change it back to a pointer when it leaves.
     map.on("mouseleave", "targeted-multi-family-fill", function() {
       map.getCanvas().style.cursor = "";
-    });
+    });*/
     /*map.on('mouseenter', 'over-twenty-five-million', function () {
                             map.getCanvas().style.cursor = 'pointer';
                         });
